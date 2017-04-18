@@ -1,8 +1,8 @@
-package database.dao;
+package app.database.dao;
 
-import database.DatabaseHandler;
-import database.validator.DishValidator;
-import model.Dish;
+import app.database.DatabaseHandler;
+import app.database.validator.Validator;
+import app.model.Dish;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -10,10 +10,21 @@ import java.util.List;
 
 public class DishDAO {
 
-    public boolean add(Dish dish, DishValidator validator){
-        return validator.validate(dish) && DatabaseHandler.run((Session session) -> session.save(dish));
+    private Validator<Dish> mValidator;
+
+    public DishDAO(Validator<Dish> validator) {
+        mValidator = validator;
     }
 
+    public Validator<Dish> getValidator() {
+        return mValidator;
+    }
+
+    public boolean add(Dish dish){
+        return mValidator.validate(dish) && DatabaseHandler.run((Session session) -> session.save(dish));
+    }
+
+    @SuppressWarnings("unchecked")
     public List<Dish> getAll(){
         final List[] list = new List[1];
         DatabaseHandler.run((Session session) -> {
@@ -22,8 +33,11 @@ public class DishDAO {
         return ((List<Dish>) list[0]);
     }
 
-    public boolean update(Dish dish, DishValidator validator){
-        return validator.validate(dish) && DatabaseHandler.run((Session session) -> session.update(dish));
+    public boolean update(Dish dish, int id){
+        return mValidator.validate(dish) && DatabaseHandler.run((Session session) -> {
+            dish.setId(id);
+            session.update(dish);
+        });
     }
 
     public boolean delete(Dish dish){

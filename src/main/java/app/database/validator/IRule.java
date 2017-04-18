@@ -1,4 +1,4 @@
-package database.validator;
+package app.database.validator;
 
 @FunctionalInterface
 public interface IRule<T> {

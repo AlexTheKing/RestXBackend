@@ -1,4 +1,4 @@
-package database;
+package app.database;
 
 import org.hibernate.Session;
 
