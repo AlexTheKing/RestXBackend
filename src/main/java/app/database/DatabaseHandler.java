@@ -31,12 +31,14 @@ public class DatabaseHandler {
             worker.work(session);
             session.getTransaction().commit();
             session.close();
+
             return true;
         }
         catch (Exception e){
             System.err.println(e);
             session.getTransaction().rollback();
             session.close();
+
             return false;
         }
     }

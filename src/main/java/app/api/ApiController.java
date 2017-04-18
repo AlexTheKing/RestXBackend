@@ -2,12 +2,13 @@ package app.api;
 
 import app.database.dao.DishDAO;
 import app.database.validator.DishValidator;
+import app.json.JsonWrapper;
 import app.model.Cost;
 import app.model.Dish;
+import app.util.Constants;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import app.util.Constants;
 
 import java.util.Calendar;
 
@@ -15,9 +16,13 @@ import java.util.Calendar;
 public class ApiController {
 
     private static DishDAO sDishDAO = new DishDAO(new DishValidator());
+    private static Calendar sCalendar = Calendar.getInstance();
+
     private interface ACTIONS {
         String ADD = "[%s] [ADD] %s";
         String UPDATE = "[%s] [UPDATE] %s";
+        String LIST_TYPES = "[%s] [LIST TYPES] %s";
+        String LIST_DISHES = "[%s] [LIST DISHES] %s";
     }
 
 
@@ -37,14 +42,16 @@ public class ApiController {
             int secondOrder = Integer.parseInt(costSplitted[1]);
             Cost costObj = new Cost(firstOrder, secondOrder);
             Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
-            System.out.println(String.format(ACTIONS.ADD, Calendar.getInstance().getTime().toString(), dish.toString()));
-            if(sDishDAO.add(dish)){
+            System.out.println(String.format(ACTIONS.ADD, sCalendar.getTime().toString(), dish.toString()));
+
+            if (sDishDAO.add(dish)) {
                 return Constants.JSON_RESPONSES.SUCCESS;
             } else {
                 return Constants.JSON_RESPONSES.ERROR;
             }
-        } catch (Exception e){
-            System.err.println("[ADD] Exception: " + e);
+        } catch (Exception e) {
+            System.err.println(String.format(ACTIONS.ADD, sCalendar.getTime().toString(), e));
+
             return Constants.JSON_RESPONSES.ERROR;
         }
     }
@@ -66,14 +73,38 @@ public class ApiController {
             int secondOrder = Integer.parseInt(costSplitted[1]);
             Cost costObj = new Cost(firstOrder, secondOrder);
             Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
-            System.out.println(String.format(ACTIONS.UPDATE, Calendar.getInstance().getTime().toString(), dish.toString()));
-            if(sDishDAO.update(dish, id)){
+            System.out.println(String.format(ACTIONS.UPDATE, sCalendar.getTime().toString(), dish.toString()));
+
+            if (sDishDAO.update(dish, id)) {
                 return Constants.JSON_RESPONSES.SUCCESS;
             } else {
                 return Constants.JSON_RESPONSES.ERROR;
             }
-        } catch (Exception e){
-            System.err.println("[UPDATE] Exception: " + e);
+        } catch (Exception e) {
+            System.err.println(String.format(ACTIONS.UPDATE, sCalendar.getTime().toString(), e));
+
+            return Constants.JSON_RESPONSES.ERROR;
+        }
+    }
+
+    @RequestMapping("/app/api/list/types")
+    public String listTypes() {
+        try {
+            return JsonWrapper.INSTANCE.wrapTypes(sDishDAO.getTypes());
+        } catch (Exception e) {
+            System.err.println(String.format(ACTIONS.LIST_TYPES, sCalendar.getTime().toString(), e));
+
+            return Constants.JSON_RESPONSES.ERROR;
+        }
+    }
+
+    @RequestMapping("/app/api/list/dishes")
+    public String listDishes() {
+        try {
+            return JsonWrapper.INSTANCE.wrapDishes(sDishDAO.getAll());
+        } catch (Exception e) {
+            System.err.println(String.format(ACTIONS.LIST_DISHES, sCalendar.getTime().toString(), e));
+
             return Constants.JSON_RESPONSES.ERROR;
         }
     }

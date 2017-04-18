@@ -30,6 +30,7 @@ public class DishDAO {
         DatabaseHandler.run((Session session) -> {
             list[0] = (List<Dish>) session.createQuery("from Dish").list();
         });
+
         return ((List<Dish>) list[0]);
     }
 
@@ -51,7 +52,18 @@ public class DishDAO {
             query.setParameter("paramName", name);
             dish[0] = (Dish) query.list().get(0);
         });
+
         return dish[0];
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<String> getTypes() {
+        final List[] list = new List[1];
+        DatabaseHandler.run((Session session) -> {
+            list[0] = (List<String>) session.createQuery("select distinct Dish.Type from Dish");
+        });
+
+        return list[0];
     }
 
 }

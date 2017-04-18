@@ -12,4 +12,9 @@ public class Constants {
         String SUCCESS = "{\"response\":{\"success\":\"All actions has been performed\"}}";
     }
 
+    public interface JSON_WRAPPER_PARTS {
+        String RESPONSE = "response";
+        String TYPES = "types";
+    }
+
 }
