@@ -1,8 +1,8 @@
-package app.database.dao;
+package app.model.dish.dao;
 
 import app.database.DatabaseHandler;
 import app.database.validator.Validator;
-import app.model.Dish;
+import app.model.dish.Dish;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -60,7 +60,8 @@ public class DishDAO {
     public List<String> getTypes() {
         final List[] list = new List[1];
         DatabaseHandler.run((Session session) -> {
-            list[0] = (List<String>) session.createQuery("select distinct Dish.Type from Dish");
+            // TODO : check HQL to get distinct types
+            list[0] = (List<String>) session.createQuery("from Dish");
         });
 
         return list[0];

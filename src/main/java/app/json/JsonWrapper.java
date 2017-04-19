@@ -1,8 +1,10 @@
 package app.json;
 
-import app.json.mappings.DishMapping;
-import app.model.Cost;
-import app.model.Dish;
+import app.model.comment.Comment;
+import app.model.dish.mapping.DishMapping;
+import app.model.dish.Cost;
+import app.model.dish.Dish;
+import app.model.rate.Rate;
 import app.util.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -59,4 +61,13 @@ public enum JsonWrapper {
         return rootObj.toString();
     }
 
+    public String wrapComments(List<Comment> comments) {
+        //TODO : add implementation
+        return null;
+    }
+
+    public String wrapRatings(List<Rate> ratings) {
+        //TODO : add implementation
+        return null;
+    }
 }

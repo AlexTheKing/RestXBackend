@@ -1,7 +1,7 @@
 package app.database.validator;
 
-import app.model.Cost;
-import app.model.Dish;
+import app.model.dish.Cost;
+import app.model.dish.Dish;
 
 public class DishValidator extends Validator<Dish>{
 
