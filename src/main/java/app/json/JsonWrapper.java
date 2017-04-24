@@ -62,12 +62,28 @@ public enum JsonWrapper {
     }
 
     public String wrapComments(List<Comment> comments) {
-        //TODO : add implementation
-        return null;
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode rootObj = mapper.createObjectNode();
+        ObjectNode responseObj = rootObj.putObject(Constants.JSON_WRAPPER_PARTS.RESPONSE);
+        ArrayNode commentsArray = responseObj.putArray(Constants.JSON_WRAPPER_PARTS.COMMENTS);
+
+        for (Comment comment : comments) {
+            commentsArray.add(comment.getComment());
+        }
+
+        return rootObj.toString();
     }
 
     public String wrapRatings(List<Rate> ratings) {
-        //TODO : add implementation
-        return null;
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode rootObj = mapper.createObjectNode();
+        ObjectNode responseObj = rootObj.putObject(Constants.JSON_WRAPPER_PARTS.RESPONSE);
+        ArrayNode ratesArray = responseObj.putArray(Constants.JSON_WRAPPER_PARTS.COMMENTS);
+
+        for (Rate rate : ratings) {
+            ratesArray.add(rate.getRate());
+        }
+
+        return rootObj.toString();
     }
 }

@@ -15,6 +15,7 @@ public class Constants {
     public interface JSON_WRAPPER_PARTS {
         String RESPONSE = "response";
         String TYPES = "types";
+        String COMMENTS = "comments";
     }
 
 }

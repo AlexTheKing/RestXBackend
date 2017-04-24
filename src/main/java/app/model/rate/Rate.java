@@ -1,5 +1,7 @@
 package app.model.rate;
 
+import app.model.dish.Dish;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,14 +19,13 @@ public class Rate {
     @Column(name = "RATINGS_RATE", nullable = false)
     private int mRate;
 
-    //TODO : add foreign key annotation
-    @Column(name = "RATINGS_DISH_ID")
-    private int mDishId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Dish mDish;
 
-    public Rate(String appInstanceId, int rate, int dishId) {
+    public Rate(String appInstanceId, int rate, Dish dish) {
         mAppInstanceId = appInstanceId;
         mRate = rate;
-        mDishId = dishId;
+        mDish = dish;
     }
 
     public Rate() {
@@ -56,11 +57,11 @@ public class Rate {
         mRate = rate;
     }
 
-    public int getDishId() {
-        return mDishId;
+    public Dish getDish() {
+        return mDish;
     }
 
-    public void setDishId(int dishId) {
-        mDishId = dishId;
+    public void setDish(Dish dish) {
+        mDish = dish;
     }
 }

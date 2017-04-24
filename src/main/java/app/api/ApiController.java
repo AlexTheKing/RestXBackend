@@ -29,7 +29,6 @@ public class ApiController {
         String ADD_COMMENT = "[%s] [ADD COMMENT] %s";
         String ADD_RATE = "[%s] [ADD RATE] %s";
         String UPDATE_DISH = "[%s] [UPDATE DISH] %s";
-        //TODO : add delete operations
         String DELETE_DISH = "[%s] [DELETE DISH] %s";
         String DELETE_COMMENT = "[%s] [DELETE COMMENT] %s";
         String DELETE_RATE = "[%s] [DELETE RATE] %s";
@@ -53,7 +52,10 @@ public class ApiController {
             String[] costSplitted = cost.split(Constants.URI.COST_SPLITTER);
             String[] ingredientsAsArray = ingredients.split(Constants.URI.INGREDIENTS_SPLITTER);
             int firstOrder = Integer.parseInt(costSplitted[0]);
-            int secondOrder = Integer.parseInt(costSplitted[1]);
+            int secondOrder = 0;
+            if(costSplitted.length == 2){
+                secondOrder = Integer.parseInt(costSplitted[1]);
+            }
             Cost costObj = new Cost(firstOrder, secondOrder);
             Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
             System.out.println(String.format(ACTIONS.ADD_DISH, sCalendar.getTime().toString(), dish.toString()));
@@ -84,7 +86,10 @@ public class ApiController {
             String[] costSplitted = cost.split(Constants.URI.COST_SPLITTER);
             String[] ingredientsAsArray = ingredients.split(Constants.URI.INGREDIENTS_SPLITTER);
             int firstOrder = Integer.parseInt(costSplitted[0]);
-            int secondOrder = Integer.parseInt(costSplitted[1]);
+            int secondOrder = 0;
+            if(costSplitted.length == 2){
+                secondOrder = Integer.parseInt(costSplitted[1]);
+            }
             Cost costObj = new Cost(firstOrder, secondOrder);
             Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
             System.out.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime().toString(), dish.toString()));
@@ -96,6 +101,22 @@ public class ApiController {
             }
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime().toString(), e));
+
+            return Constants.JSON_RESPONSES.ERROR;
+        }
+    }
+
+    @RequestMapping("/app/api/delete/dish")
+    public String deleteDish(@RequestParam(name = "name") String name) {
+        try {
+            Dish dish = sDishDAO.getByName(name);
+            if(dish != null && sDishDAO.delete(dish)){
+                return Constants.JSON_RESPONSES.SUCCESS;
+            } else {
+                return Constants.JSON_RESPONSES.ERROR;
+            }
+        } catch (Exception e){
+            System.err.println(String.format(ACTIONS.DELETE_DISH, sCalendar.getTime().toString(), e));
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -129,7 +150,7 @@ public class ApiController {
                              @RequestParam(name = "dishname") String dishName) {
         try {
             Dish dish = sDishDAO.getByName(dishName);
-            Comment commentObj = new Comment(appId, comment, dish.getId());
+            Comment commentObj = new Comment(appId, comment, dish);
 
             if (sCommentDAO.add(commentObj)) {
                 return Constants.JSON_RESPONSES.SUCCESS;
@@ -138,6 +159,23 @@ public class ApiController {
             }
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_COMMENT, sCalendar.getTime().toString(), e));
+
+            return Constants.JSON_RESPONSES.ERROR;
+        }
+    }
+
+    @RequestMapping("/app/api/delete/comment")
+    public String deleteComment(@RequestParam(name = "id") int id){
+        try {
+            Comment comment = sCommentDAO.getById(id);
+
+            if(comment != null && sCommentDAO.delete(comment)){
+                return Constants.JSON_RESPONSES.SUCCESS;
+            } else {
+                return Constants.JSON_RESPONSES.ERROR;
+            }
+        } catch (Exception e){
+            System.err.println(String.format(ACTIONS.DELETE_COMMENT, sCalendar.getTime().toString(), e));
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -160,7 +198,7 @@ public class ApiController {
                           @RequestParam(name = "dishname") String dishName) {
         try {
             Dish dish = sDishDAO.getByName(dishName);
-            Rate rateObj = new Rate(appId, rate, dish.getId());
+            Rate rateObj = new Rate(appId, rate, dish);
 
             if (sRateDAO.add(rateObj)) {
                 return Constants.JSON_RESPONSES.SUCCESS;
@@ -169,6 +207,23 @@ public class ApiController {
             }
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_RATE, sCalendar.getTime().toString(), e));
+
+            return Constants.JSON_RESPONSES.ERROR;
+        }
+    }
+
+    @RequestMapping("/app/api/delete/rate")
+    public String deleteRate(@RequestParam(name = "id") int id){
+        try {
+            Rate rate = sRateDAO.getById(id);
+
+            if(rate != null && sRateDAO.delete(rate)){
+                return Constants.JSON_RESPONSES.SUCCESS;
+            } else {
+                return Constants.JSON_RESPONSES.ERROR;
+            }
+        } catch (Exception e){
+            System.err.println(String.format(ACTIONS.DELETE_RATE, sCalendar.getTime().toString(), e));
 
             return Constants.JSON_RESPONSES.ERROR;
         }

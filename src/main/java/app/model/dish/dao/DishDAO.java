@@ -48,8 +48,8 @@ public class DishDAO {
     public Dish getByName(String name) {
         final Dish[] dish = new Dish[1];
         DatabaseHandler.run((Session session) -> {
-            Query query = session.createQuery("from Dish where name :paramName");
-            query.setParameter("paramName", name);
+            Query query = session.createQuery("from Dish dish where dish.mName= :name");
+            query.setParameter("name", name);
             dish[0] = (Dish) query.list().get(0);
         });
 
@@ -60,8 +60,7 @@ public class DishDAO {
     public List<String> getTypes() {
         final List[] list = new List[1];
         DatabaseHandler.run((Session session) -> {
-            // TODO : check HQL to get distinct types
-            list[0] = (List<String>) session.createQuery("from Dish");
+            list[0] = (List<String>) session.createQuery("select distinct dish.mType from Dish dish").list();
         });
 
         return list[0];

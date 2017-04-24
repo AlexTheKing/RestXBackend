@@ -1,6 +1,10 @@
 package app.model.dish;
 
+import app.model.comment.Comment;
+import app.model.rate.Rate;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "DISHES")
@@ -38,6 +42,12 @@ public class Dish {
 
     @Column(name = "DISH_BITMAP_URL", nullable = false)
     private String mBitmapUrl;
+
+    @OneToMany(mappedBy = "mDish", fetch = FetchType.LAZY)
+    private List<Comment> mComments;
+
+    @OneToMany(mappedBy = "mDish", fetch = FetchType.LAZY)
+    private List<Rate> mRates;
 
     public Dish(String name, String weight, String type, Cost cost, String currency, String description, String[] ingredients, String bitmapUrl) {
         mName = name;
@@ -111,7 +121,19 @@ public class Dish {
     }
 
     public float getAverageEstimation() {
-        return mAverageEstimation;
+        if(mRates.size() == 0){
+            return 0;
+        } else {
+            mAverageEstimation = 0;
+
+            for (Rate rate : mRates) {
+                mAverageEstimation += rate.getRate();
+            }
+
+            mAverageEstimation /= mRates.size();
+
+            return mAverageEstimation;
+        }
     }
 
     public void setAverageEstimation(float averageEstimation) {
@@ -132,6 +154,22 @@ public class Dish {
 
     public void setBitmapUrl(String bitmapUrl) {
         mBitmapUrl = bitmapUrl;
+    }
+
+    public List<Comment> getComments() {
+        return mComments;
+    }
+
+    public void setComments(List<Comment> comments) {
+        mComments = comments;
+    }
+
+    public List<Rate> getRates() {
+        return mRates;
+    }
+
+    public void setRates(List<Rate> rates) {
+        mRates = rates;
     }
 
     @Override

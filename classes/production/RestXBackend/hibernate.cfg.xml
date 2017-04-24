@@ -31,7 +31,9 @@
         <property name="hbm2ddl.auto">create</property>
 
         <!-- Names the annotated entity class -->
-        <mapping class="app.model.Dish"/>
+        <mapping class="app.model.dish.Dish"/>
+        <mapping class="app.model.comment.Comment"/>
+        <mapping class="app.model.rate.Rate"/>
 
     </session-factory>
 

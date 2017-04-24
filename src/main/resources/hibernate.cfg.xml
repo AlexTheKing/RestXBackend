@@ -32,6 +32,8 @@
 
         <!-- Names the annotated entity class -->
         <mapping class="app.model.dish.Dish"/>
+        <mapping class="app.model.comment.Comment"/>
+        <mapping class="app.model.rate.Rate"/>
 
     </session-factory>
 

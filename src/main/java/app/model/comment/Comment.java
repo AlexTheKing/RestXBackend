@@ -1,5 +1,7 @@
 package app.model.comment;
 
+import app.model.dish.Dish;
+
 import javax.persistence.*;
 
 @Entity
@@ -17,14 +19,13 @@ public class Comment {
     @Column(name = "COMMENTS_COMMENT", nullable = false)
     private String mComment;
 
-    //TODO : add foreign key annotation
-    @Column(name = "COMMENTS_DISH_ID")
-    private int mDishId;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Dish mDish;
 
-    public Comment(String appInstanceId, String comment, int dishId) {
+    public Comment(String appInstanceId, String comment, Dish dish) {
         mAppInstanceId = appInstanceId;
         mComment = comment;
-        mDishId = dishId;
+        mDish = dish;
     }
 
     public Comment() {
@@ -55,11 +56,11 @@ public class Comment {
         mComment = comment;
     }
 
-    public int getDishId() {
-        return mDishId;
+    public Dish getDish() {
+        return mDish;
     }
 
-    public void setDishId(int dishId) {
-        mDishId = dishId;
+    public void setDish(Dish dish) {
+        mDish = dish;
     }
 }
