@@ -74,7 +74,7 @@ public enum JsonWrapper {
         return rootObj.toString();
     }
 
-    public String wrapRatings(List<Rate> ratings) {
+    public String wrapRates(List<Rate> ratings) {
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootObj = mapper.createObjectNode();
         ObjectNode responseObj = rootObj.putObject(Constants.JSON_WRAPPER_PARTS.RESPONSE);

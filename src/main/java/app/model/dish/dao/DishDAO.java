@@ -1,6 +1,7 @@
 package app.model.dish.dao;
 
 import app.database.DatabaseHandler;
+import app.database.ICallback;
 import app.database.validator.Validator;
 import app.model.dish.Dish;
 import org.hibernate.Session;
@@ -25,13 +26,11 @@ public class DishDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Dish> getAll(){
-        final List[] list = new List[1];
+    public void getAll(ICallback<List<Dish>> callback){
         DatabaseHandler.run((Session session) -> {
-            list[0] = (List<Dish>) session.createQuery("from Dish").list();
+            final List<Dish> list = (List<Dish>) session.createQuery("from Dish").list();
+            callback.execute(list);
         });
-
-        return ((List<Dish>) list[0]);
     }
 
     public boolean update(Dish dish, int id){
@@ -45,15 +44,13 @@ public class DishDAO {
         return DatabaseHandler.run((Session session) -> session.delete(dish));
     }
 
-    public Dish getByName(String name) {
-        final Dish[] dish = new Dish[1];
+    public void getByName(String name, ICallback<Dish> callback) {
         DatabaseHandler.run((Session session) -> {
             Query query = session.createQuery("from Dish dish where dish.mName= :name");
             query.setParameter("name", name);
-            dish[0] = (Dish) query.list().get(0);
+            final Dish dish = (Dish) query.list().get(0);
+            callback.execute(dish);
         });
-
-        return dish[0];
     }
 
     @SuppressWarnings("unchecked")
@@ -65,5 +62,4 @@ public class DishDAO {
 
         return list[0];
     }
-
 }

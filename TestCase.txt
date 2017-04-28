@@ -1,0 +1,19 @@
+1) http://localhost:8080/app/api/add/dish?name=Pancakes%20with%20bananas%20and%20chocolate&weight=235&type=Cold%20Snacks&cost=12&currency=BYN&description=Very%20tasty%20pancakes&ingredients=milk,flavour,butter,eggs&bitmapurl=http://veryinteresting.site.com/pancakes.png
+
+2) http://localhost:8080/app/api/add/dish?name=Fish%20with%20lemon%20and%20olives&weight=120&type=Main&cost=24&currency=BYN&description=Amazing%20dish!&ingredients=fish,lemon,olives&bitmapurl=http://veryinteresting.site.com/fish.png
+
+3) http://localhost:8080/app/api/list/dishes
+
+4) http://localhost:8080/app/api/add/rate?appid=application5&rate=3&dishname=Pancakes with bananas and chocolate
+
+5) http://localhost:8080/app/api/add/rate?appid=application1&rate=4&dishname=Pancakes with bananas and chocolate
+
+6) http://localhost:8080/app/api/add/rate?appid=application2&rate=5&dishname=Fish with lemon and olives
+
+7) http://localhost:8080/app/api/add/rate?appid=application5&rate=5&dishname=Fish with lemon and olives
+
+8) http://localhost:8080/app/api/add/rate?appid=application1&rate=2&dishname=Fish with lemon and olives
+
+9) http://localhost:8080/app/api/add/rate?appid=application3&rate=3&dishname=Fish with lemon and olives
+
+10) http://localhost:8080/app/api/list/recommendations?appid=application3

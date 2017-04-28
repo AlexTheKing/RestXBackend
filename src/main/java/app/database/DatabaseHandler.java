@@ -1,5 +1,6 @@
 package app.database;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;
@@ -30,17 +31,16 @@ public class DatabaseHandler {
             session.beginTransaction();
             worker.work(session);
             session.getTransaction().commit();
-            session.close();
 
             return true;
         }
         catch (Exception e){
             System.err.println(e);
             session.getTransaction().rollback();
-            session.close();
 
             return false;
+        } finally {
+            session.close();
         }
     }
-
 }

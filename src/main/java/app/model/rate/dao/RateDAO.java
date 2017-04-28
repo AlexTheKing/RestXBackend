@@ -38,4 +38,16 @@ public class RateDAO {
     public boolean delete(Rate rate){
         return DatabaseHandler.run((Session session) -> session.delete(rate));
     }
+
+    @SuppressWarnings("unchecked")
+    public List<Rate> getByAppInstanceId(String appInstanceId) {
+        final List[] rates = new List[1];
+        DatabaseHandler.run((Session session) -> {
+            Query query = session.createQuery("from Rate rate where rate.mAppInstanceId= :id");
+            query.setParameter("id", appInstanceId);
+            rates[0] = (List<Rate>) query.list();
+        });
+
+        return rates[0];
+    }
 }
