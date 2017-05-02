@@ -1,10 +1,10 @@
 package app.json;
 
-import app.model.comment.Comment;
-import app.model.dish.mapping.DishMapping;
-import app.model.dish.Cost;
-import app.model.dish.Dish;
-import app.model.rate.Rate;
+import app.model.entities.comment.Comment;
+import app.model.entities.dish.mapping.DishMapping;
+import app.model.entities.dish.Cost;
+import app.model.entities.dish.Dish;
+import app.model.entities.rate.Rate;
 import app.util.Constants;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;

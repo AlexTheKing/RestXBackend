@@ -1,4 +1,4 @@
-package app.model.dish;
+package app.model.entities.dish;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;

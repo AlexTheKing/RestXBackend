@@ -1,4 +1,4 @@
-package app.model.dish.mapping;
+package app.model.entities.dish.mapping;
 
 public class DishMapping {
 

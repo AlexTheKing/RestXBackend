@@ -1,39 +1,38 @@
-package app.model.rate;
+package app.model.entities.comment;
 
-import app.model.dish.Dish;
+import app.model.entities.dish.Dish;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name = "RATINGS")
-public class Rate {
+@Table(name = "COMMENTS")
+public class Comment {
 
     @Id
     @GeneratedValue
-    @Column(name = "RATINGS_ID", nullable = false, unique = true)
+    @Column(name = "COMMENTS_ID", nullable = false, unique = true)
     private int mId;
 
-    @Column(name = "RATINGS_APP_ID", nullable = false)
+    @Column(name = "COMMENTS_APP_ID", nullable = false)
     private String mAppInstanceId;
 
-    @Column(name = "RATINGS_RATE", nullable = false)
-    private int mRate;
+    @Column(name = "COMMENTS_COMMENT", nullable = false)
+    private String mComment;
 
     @ManyToOne(fetch = FetchType.EAGER)
     private Dish mDish;
 
-    public Rate(String appInstanceId, int rate, Dish dish) {
+    public Comment(String appInstanceId, String comment, Dish dish) {
         mAppInstanceId = appInstanceId;
-        mRate = rate;
+        mComment = comment;
         mDish = dish;
     }
 
-    public Rate() {
+    public Comment() {
 
     }
 
     public int getId() {
-
         return mId;
     }
 
@@ -49,12 +48,12 @@ public class Rate {
         mAppInstanceId = appInstanceId;
     }
 
-    public int getRate() {
-        return mRate;
+    public String getComment() {
+        return mComment;
     }
 
-    public void setRate(int rate) {
-        mRate = rate;
+    public void setComment(String comment) {
+        mComment = comment;
     }
 
     public Dish getDish() {

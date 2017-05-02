@@ -1,23 +1,23 @@
-package app.model.rate.dao;
+package app.model.dao;
 
 import app.database.DatabaseHandler;
-import app.database.ICallback;
-import app.model.comment.Comment;
-import app.model.rate.Rate;
+import app.model.entities.rate.Rate;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
 import java.util.List;
 
-public class RateDAO {
+public class RateDAO extends AbstractDAO {
 
     public boolean add(Rate rate){
         return DatabaseHandler.run((Session session) -> session.save(rate));
     }
 
     @SuppressWarnings("unchecked")
-    public List<Rate> getAll(Session session){
+    public List<Rate> getAll(){
         final List[] list = new List[1];
+        final Session session = getSession();
+
         DatabaseHandler.run(session, (Void) -> {
             list[0] = (List<Rate>) session.createQuery("from Rate").list();
         });
@@ -25,8 +25,10 @@ public class RateDAO {
         return list[0];
     }
 
-    public Rate getById(Session session, int id) {
+    public Rate getById(int id) {
         final Rate[] rate = new Rate[1];
+        final Session session = getSession();
+
         DatabaseHandler.run(session, (Void) -> {
             Query query = session.createQuery("from Rate rate where rate.mId= :id");
             query.setParameter("id", id);
@@ -41,8 +43,10 @@ public class RateDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Rate> getByAppInstanceId(Session session, String appInstanceId) {
+    public List<Rate> getByAppInstanceId(String appInstanceId) {
         final List[] list = new List[1];
+        final Session session = getSession();
+
         DatabaseHandler.run(session, (Void) -> {
             Query query = session.createQuery("from Rate rate where rate.mAppInstanceId= :id");
             query.setParameter("id", appInstanceId);

@@ -1,7 +1,7 @@
-package app.model.dish;
+package app.model.entities.dish;
 
-import app.model.comment.Comment;
-import app.model.rate.Rate;
+import app.model.entities.comment.Comment;
+import app.model.entities.rate.Rate;
 
 import javax.persistence.*;
 import java.util.List;

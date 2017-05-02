@@ -1,32 +1,31 @@
-package app.util;
+package app.api;
 
-import app.database.validator.DishValidator;
-import app.model.dish.Dish;
-import app.model.dish.dao.DishDAO;
-import app.model.rate.Rate;
-import app.model.rate.dao.RateDAO;
-import org.hibernate.Session;
+import app.model.entities.dish.Dish;
+import app.model.dao.DishDAO;
+import app.model.entities.rate.Rate;
+import app.model.dao.RateDAO;
+import app.util.Constants;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class RecommendationHandler {
+class RecommendationHandler {
 
     private final RateDAO mRateDAO;
     private final DishDAO mDishDAO;
 
-    public RecommendationHandler(DishDAO dishDAO, RateDAO rateDAO){
+    RecommendationHandler(DishDAO dishDAO, RateDAO rateDAO){
         mDishDAO = dishDAO;
         mRateDAO = rateDAO;
     }
 
-    public List<Dish> getRecommendations(Session session, String appInstanceId){
-        return getRecommendations(session, appInstanceId, Constants.RECOMMENDATIONS.DEFAULT_COUNT);
+    List<Dish> getRecommendations(String appInstanceId){
+        return getRecommendations(appInstanceId, Constants.RECOMMENDATIONS.DEFAULT_COUNT);
     }
 
-    public List<Dish> getRecommendations(Session session, String appInstanceId, int count){
-        HashMap<String, List<Rate>> ratesPerUser = getRatesPerUser(session);
+    private List<Dish> getRecommendations(String appInstanceId, int count){
+        HashMap<String, List<Rate>> ratesPerUser = getRatesPerUser();
         List<Rate> searchedUserRates = ratesPerUser.get(appInstanceId);
         ratesPerUser.remove(appInstanceId);
         HashMap<String, List<DishCorrelation>> correlatedRatesPerUser = new HashMap<>();
@@ -45,7 +44,7 @@ public class RecommendationHandler {
             }
         }
 
-        HashMap<Dish, List<CorrelatedRate>> correlatedRatesPerDish = transformIntoDishMap(session, correlatedRatesPerUser);
+        HashMap<Dish, List<CorrelatedRate>> correlatedRatesPerDish = transformIntoDishMap(correlatedRatesPerUser);
         HashMap<Dish, Double> userRatePerDish = calculateUserRatePerDish(correlatedRatesPerDish, coefficientPerUser);
 
         return sortAndReturnCount(userRatePerDish, count);
@@ -115,9 +114,9 @@ public class RecommendationHandler {
         }
     }
 
-    private HashMap<Dish, List<CorrelatedRate>> transformIntoDishMap(Session session, HashMap<String, List<DishCorrelation>> correlatedRatePerUser){
+    private HashMap<Dish, List<CorrelatedRate>> transformIntoDishMap(HashMap<String, List<DishCorrelation>> correlatedRatePerUser){
         final HashMap<Dish, List<CorrelatedRate>> correlatedRatePerDish = new HashMap<>();
-        final List<Dish> dishes = mDishDAO.getAll(session);
+        final List<Dish> dishes = mDishDAO.getAll();
 
         for (Dish dish : dishes) {
             correlatedRatePerDish.put(dish, new ArrayList<>());
@@ -132,9 +131,9 @@ public class RecommendationHandler {
         return correlatedRatePerDish;
     }
 
-    private HashMap<String, List<Rate>> getRatesPerUser(Session session){
+    private HashMap<String, List<Rate>> getRatesPerUser(){
         final HashMap<String, List<Rate>> ratesPerUser = new HashMap<>();
-        final List<Rate> allRates = mRateDAO.getAll(session);
+        final List<Rate> allRates = mRateDAO.getAll();
 
         for (Rate rate : allRates) {
             String id = rate.getAppInstanceId();
@@ -186,7 +185,7 @@ public class RecommendationHandler {
         }
     }
 
-    private class CorrelatedRate {
+    private final class CorrelatedRate {
 
         private String mUser;
         private double mCorrelation;
@@ -213,7 +212,7 @@ public class RecommendationHandler {
         }
     }
 
-    private class DishCorrelation {
+    private final class DishCorrelation {
 
         private Dish mDish;
         private double mCorrelatedRate;
@@ -239,5 +238,4 @@ public class RecommendationHandler {
             mCorrelatedRate = correlatedRate;
         }
     }
-
 }

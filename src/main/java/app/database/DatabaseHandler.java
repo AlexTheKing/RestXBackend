@@ -63,5 +63,4 @@ public class DatabaseHandler {
     public static Session getSession(){
         return sFactory.openSession();
     }
-
 }

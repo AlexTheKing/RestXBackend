@@ -1,33 +1,24 @@
 package app.api;
 
-import app.database.DatabaseHandler;
-import app.database.validator.DishValidator;
 import app.json.JsonWrapper;
-import app.model.comment.Comment;
-import app.model.comment.dao.CommentDAO;
-import app.model.dish.Cost;
-import app.model.dish.Dish;
-import app.model.dish.dao.DishDAO;
-import app.model.rate.Rate;
-import app.model.rate.dao.RateDAO;
+import app.model.entities.comment.Comment;
+import app.model.dao.CommentDAO;
+import app.model.entities.dish.Cost;
+import app.model.entities.dish.Dish;
+import app.model.dao.DishDAO;
+import app.model.entities.rate.Rate;
+import app.model.dao.RateDAO;
 import app.util.Constants;
-import app.util.RecommendationHandler;
-import app.util.Response;
-import org.hibernate.Session;
+import app.model.DataEnvironment;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Calendar;
-import java.util.List;
 
 @RestController
 public class ApiController {
 
-    private static final DishDAO sDishDAO = new DishDAO(new DishValidator());
-    private static final CommentDAO sCommentDAO = new CommentDAO();
-    private static final RateDAO sRateDAO = new RateDAO();
-    private static final RecommendationHandler sRecommendationHandler = new RecommendationHandler(sDishDAO, sRateDAO);
     private static final Calendar sCalendar = Calendar.getInstance();
 
     private interface ACTIONS {
@@ -56,22 +47,30 @@ public class ApiController {
                           @RequestParam(name = "ingredients") String ingredients,
                           @RequestParam(name = "bitmapurl") String bitmapUrl) {
         try {
-            String[] costSplitted = cost.split(Constants.URI.COST_SPLITTER);
-            String[] ingredientsAsArray = ingredients.split(Constants.URI.INGREDIENTS_SPLITTER);
-            int firstOrder = Integer.parseInt(costSplitted[0]);
+            final DishDAO dishDAO = DataEnvironment.getDishDAO();
+            final String[] costSplitted = cost.split(Constants.URI.COST_SPLITTER);
+            final String[] ingredientsAsArray = ingredients.split(Constants.URI.INGREDIENTS_SPLITTER);
+            final int firstOrder = Integer.parseInt(costSplitted[0]);
             int secondOrder = 0;
+
             if(costSplitted.length == 2){
                 secondOrder = Integer.parseInt(costSplitted[1]);
             }
-            Cost costObj = new Cost(firstOrder, secondOrder);
-            Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
-            System.out.println(String.format(ACTIONS.ADD_DISH, sCalendar.getTime().toString(), dish.toString()));
 
-            if (sDishDAO.add(dish)) {
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            final Cost costObj = new Cost(firstOrder, secondOrder);
+            final Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
+            final Response response = new Response();
+
+            DataEnvironment.run((Void) -> {
+                if (dishDAO.add(dish)) {
+                    System.out.println(String.format(ACTIONS.ADD_DISH, sCalendar.getTime().toString(), dish.toString()));
+                    response.setContent(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setContent(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_DISH, sCalendar.getTime().toString(), e));
 
@@ -90,22 +89,30 @@ public class ApiController {
                              @RequestParam(name = "ingredients") String ingredients,
                              @RequestParam(name = "bitmapurl") String bitmapUrl) {
         try {
-            String[] costSplitted = cost.split(Constants.URI.COST_SPLITTER);
-            String[] ingredientsAsArray = ingredients.split(Constants.URI.INGREDIENTS_SPLITTER);
-            int firstOrder = Integer.parseInt(costSplitted[0]);
+            final DishDAO dishDAO = DataEnvironment.getDishDAO();
+            final String[] costSplitted = cost.split(Constants.URI.COST_SPLITTER);
+            final String[] ingredientsAsArray = ingredients.split(Constants.URI.INGREDIENTS_SPLITTER);
+            final int firstOrder = Integer.parseInt(costSplitted[0]);
             int secondOrder = 0;
+
             if(costSplitted.length == 2){
                 secondOrder = Integer.parseInt(costSplitted[1]);
             }
-            Cost costObj = new Cost(firstOrder, secondOrder);
-            Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
-            System.out.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime().toString(), dish.toString()));
 
-            if (sDishDAO.update(dish, id)) {
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            final Cost costObj = new Cost(firstOrder, secondOrder);
+            final Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
+            final Response response = new Response();
+
+            DataEnvironment.run((Void) -> {
+                if (dishDAO.update(dish, id)) {
+                    System.out.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime().toString(), dish.toString()));
+                    response.setContent(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setContent(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime().toString(), e));
 
@@ -115,14 +122,20 @@ public class ApiController {
 
     @RequestMapping("/app/api/delete/dish")
     public String deleteDish(@RequestParam(name = "name") String name) {
-        try (final Session session = DatabaseHandler.getSession()) {
-            final Dish dish = sDishDAO.getByName(session, name);
+        try {
+            final DishDAO dishDAO = DataEnvironment.getDishDAO();
+            final Dish dish = dishDAO.getByName(name);
+            final Response response = new Response();
 
-            if (dish != null && sDishDAO.delete(dish)) {
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            DataEnvironment.run((Void) -> {
+                if (dish != null && dishDAO.delete(dish)) {
+                    response.setContent(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setContent(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.DELETE_DISH, sCalendar.getTime().toString(), e));
 
@@ -133,7 +146,14 @@ public class ApiController {
     @RequestMapping("/app/api/list/types")
     public String listTypes() {
         try {
-            return JsonWrapper.INSTANCE.wrapTypes(sDishDAO.getTypes());
+            final DishDAO dishDAO = DataEnvironment.getDishDAO();
+            final Response response = new Response();
+
+            DataEnvironment.run((Void) -> {
+                response.setContent(JsonWrapper.INSTANCE.wrapTypes(dishDAO.getTypes()));
+            });
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_TYPES, sCalendar.getTime().toString(), e));
 
@@ -143,10 +163,15 @@ public class ApiController {
 
     @RequestMapping("/app/api/list/dishes")
     public String listDishes() {
-        try (final Session session = DatabaseHandler.getSession()) {
-            final List<Dish> dishes = sDishDAO.getAll(session);
+        try {
+            final DishDAO dishDAO = DataEnvironment.getDishDAO();
+            final Response response = new Response();
 
-            return JsonWrapper.INSTANCE.wrapDishes(dishes);
+            DataEnvironment.run((Void) -> {
+                response.setContent(JsonWrapper.INSTANCE.wrapDishes(dishDAO.getAll()));
+            });
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_DISHES, sCalendar.getTime().toString(), e));
 
@@ -158,15 +183,23 @@ public class ApiController {
     public String addComment(@RequestParam(name = "appid") String appId,
                              @RequestParam(name = "comment") String comment,
                              @RequestParam(name = "dishname") String dishName) {
-        try (final Session session = DatabaseHandler.getSession()) {
-            final Dish dish = sDishDAO.getByName(session, dishName);
-            final Comment commentObj = new Comment(appId, comment, dish);
+        try {
+            final DishDAO dishDAO = DataEnvironment.getDishDAO();
+            final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
+            final Response response = new Response();
 
-            if (sCommentDAO.add(commentObj)) {
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            DataEnvironment.run((Void) -> {
+                final Dish dish = dishDAO.getByName(dishName);
+                final Comment commentObj = new Comment(appId, comment, dish);
+
+                if (commentDAO.add(commentObj)) {
+                    response.setContent(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setContent(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_COMMENT, sCalendar.getTime().toString(), e));
 
@@ -176,14 +209,20 @@ public class ApiController {
 
     @RequestMapping("/app/api/delete/comment")
     public String deleteComment(@RequestParam(name = "id") int id){
-        try (final Session session = DatabaseHandler.getSession()) {
-            final Comment comment = sCommentDAO.getById(session, id);
+        try {
+            final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
+            final Comment comment = commentDAO.getById(id);
+            final Response response = new Response();
 
-            if(comment != null && sCommentDAO.delete(comment)){
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            DataEnvironment.run((Void) -> {
+                if(comment != null && commentDAO.delete(comment)){
+                    response.setContent(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setContent(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
+
+            return response.getContent();
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_COMMENT, sCalendar.getTime().toString(), e));
 
@@ -193,10 +232,13 @@ public class ApiController {
 
     @RequestMapping("/app/api/list/comments")
     public String listComments() {
-        try (final Session session = DatabaseHandler.getSession()) {
-            final List<Comment> comments = sCommentDAO.getAll(session);
+        try {
+            final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
+            final Response response = new Response();
 
-            return JsonWrapper.INSTANCE.wrapComments(comments);
+            DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapComments(commentDAO.getAll())));
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_COMMENTS, sCalendar.getTime().toString(), e));
 
@@ -208,15 +250,23 @@ public class ApiController {
     public String addRate(@RequestParam(name = "appid") String appId,
                           @RequestParam(name = "rate") int rate,
                           @RequestParam(name = "dishname") String dishName) {
-        try (final Session session = DatabaseHandler.getSession()) {
-            final Dish dish = sDishDAO.getByName(session, dishName);
-            final Rate rateObj = new Rate(appId, rate, dish);
+        try {
+            final DishDAO dishDAO = DataEnvironment.getDishDAO();
+            final RateDAO rateDAO = DataEnvironment.getRateDAO();
+            final Response response = new Response();
 
-            if (sRateDAO.add(rateObj)) {
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            DataEnvironment.run((Void) -> {
+                final Dish dish = dishDAO.getByName(dishName);
+                final Rate rateObj = new Rate(appId, rate, dish);
+
+                if (rateDAO.add(rateObj)) {
+                    response.setContent(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setContent(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_RATE, sCalendar.getTime().toString(), e));
 
@@ -226,14 +276,20 @@ public class ApiController {
 
     @RequestMapping("/app/api/delete/rate")
     public String deleteRate(@RequestParam(name = "id") int id){
-        try (final Session session = DatabaseHandler.getSession()) {
-            final Rate rate = sRateDAO.getById(session, id);
+        try {
+            final RateDAO rateDAO = DataEnvironment.getRateDAO();
+            final Rate rate = rateDAO.getById(id);
+            final Response response = new Response();
 
-            if(rate != null && sRateDAO.delete(rate)){
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            DataEnvironment.run((Void) -> {
+                if(rate != null && rateDAO.delete(rate)){
+                    response.setContent(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setContent(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
+
+            return response.getContent();
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_RATE, sCalendar.getTime().toString(), e));
 
@@ -243,10 +299,13 @@ public class ApiController {
 
     @RequestMapping("/app/api/list/rates")
     public String listRates() {
-        try (final Session session = DatabaseHandler.getSession()) {
-            final List<Rate> rates = sRateDAO.getAll(session);
+        try {
+            final RateDAO rateDAO = DataEnvironment.getRateDAO();
+            final Response response = new Response();
 
-            return JsonWrapper.INSTANCE.wrapRates(rates);
+            DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapRates(rateDAO.getAll())));
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_RATES, sCalendar.getTime().toString(), e));
 
@@ -256,10 +315,17 @@ public class ApiController {
 
     @RequestMapping("/app/api/list/recommendations")
     public String listRecommendations(@RequestParam(name = "appid") String appId){
-        try (final Session session = DatabaseHandler.getSession()){
-            List<Dish> recommendedDishes = sRecommendationHandler.getRecommendations(session, appId);
+        try {
+            final DishDAO dishDAO = DataEnvironment.getDishDAO();
+            final RateDAO rateDAO = DataEnvironment.getRateDAO();
+            final Response response = new Response();
 
-            return JsonWrapper.INSTANCE.wrapDishes(recommendedDishes);
+            DataEnvironment.run((Void) -> {
+                RecommendationHandler handler = new RecommendationHandler(dishDAO, rateDAO);
+                response.setContent(JsonWrapper.INSTANCE.wrapDishes(handler.getRecommendations(appId)));
+            });
+
+            return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_RECOMMENDATIONS, sCalendar.getTime().toString(), e));
 
