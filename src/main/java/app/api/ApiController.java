@@ -1,5 +1,6 @@
 package app.api;
 
+import app.database.DatabaseHandler;
 import app.database.validator.DishValidator;
 import app.json.JsonWrapper;
 import app.model.comment.Comment;
@@ -12,6 +13,7 @@ import app.model.rate.dao.RateDAO;
 import app.util.Constants;
 import app.util.RecommendationHandler;
 import app.util.Response;
+import org.hibernate.Session;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -113,18 +115,15 @@ public class ApiController {
 
     @RequestMapping("/app/api/delete/dish")
     public String deleteDish(@RequestParam(name = "name") String name) {
-        try {
-            final Response response = new Response();
-            sDishDAO.getByName(name, (Dish dish) -> {
-                if(dish != null && sDishDAO.delete(dish)){
-                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
-                } else {
-                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
-                }
-            });
+        try (final Session session = DatabaseHandler.getSession()) {
+            final Dish dish = sDishDAO.getByName(session, name);
 
-            return response.toString();
-        } catch (Exception e){
+            if (dish != null && sDishDAO.delete(dish)) {
+                return Constants.JSON_RESPONSES.SUCCESS;
+            } else {
+                return Constants.JSON_RESPONSES.ERROR;
+            }
+        } catch (Exception e) {
             System.err.println(String.format(ACTIONS.DELETE_DISH, sCalendar.getTime().toString(), e));
 
             return Constants.JSON_RESPONSES.ERROR;
@@ -144,13 +143,10 @@ public class ApiController {
 
     @RequestMapping("/app/api/list/dishes")
     public String listDishes() {
-        try {
-            final Response response = new Response();
-            sDishDAO.getAll((List<Dish> dishes) -> {
-                response.setResponseString(JsonWrapper.INSTANCE.wrapDishes(dishes));
-            });
+        try (final Session session = DatabaseHandler.getSession()) {
+            final List<Dish> dishes = sDishDAO.getAll(session);
 
-            return response.toString();
+            return JsonWrapper.INSTANCE.wrapDishes(dishes);
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_DISHES, sCalendar.getTime().toString(), e));
 
@@ -162,19 +158,15 @@ public class ApiController {
     public String addComment(@RequestParam(name = "appid") String appId,
                              @RequestParam(name = "comment") String comment,
                              @RequestParam(name = "dishname") String dishName) {
-        try {
-            final Response response = new Response();
-            sDishDAO.getByName(dishName, (Dish dish) -> {
-                Comment commentObj = new Comment(appId, comment, dish);
+        try (final Session session = DatabaseHandler.getSession()) {
+            final Dish dish = sDishDAO.getByName(session, dishName);
+            final Comment commentObj = new Comment(appId, comment, dish);
 
-                if (sCommentDAO.add(commentObj)) {
-                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
-                } else {
-                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
-                }
-            });
-
-            return response.toString();
+            if (sCommentDAO.add(commentObj)) {
+                return Constants.JSON_RESPONSES.SUCCESS;
+            } else {
+                return Constants.JSON_RESPONSES.ERROR;
+            }
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_COMMENT, sCalendar.getTime().toString(), e));
 
@@ -184,17 +176,14 @@ public class ApiController {
 
     @RequestMapping("/app/api/delete/comment")
     public String deleteComment(@RequestParam(name = "id") int id){
-        try {
-            final Response response = new Response();
-            sCommentDAO.getById(id, (Comment comment) -> {
-                if(comment != null && sCommentDAO.delete(comment)){
-                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
-                } else {
-                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
-                }
-            });
+        try (final Session session = DatabaseHandler.getSession()) {
+            final Comment comment = sCommentDAO.getById(session, id);
 
-            return response.toString();
+            if(comment != null && sCommentDAO.delete(comment)){
+                return Constants.JSON_RESPONSES.SUCCESS;
+            } else {
+                return Constants.JSON_RESPONSES.ERROR;
+            }
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_COMMENT, sCalendar.getTime().toString(), e));
 
@@ -204,13 +193,10 @@ public class ApiController {
 
     @RequestMapping("/app/api/list/comments")
     public String listComments() {
-        try {
-            final Response response = new Response();
-            sCommentDAO.getAll((List<Comment> comments) -> {
-                response.setResponseString(JsonWrapper.INSTANCE.wrapComments(comments));
-            });
+        try (final Session session = DatabaseHandler.getSession()) {
+            final List<Comment> comments = sCommentDAO.getAll(session);
 
-            return response.toString();
+            return JsonWrapper.INSTANCE.wrapComments(comments);
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_COMMENTS, sCalendar.getTime().toString(), e));
 
@@ -222,19 +208,15 @@ public class ApiController {
     public String addRate(@RequestParam(name = "appid") String appId,
                           @RequestParam(name = "rate") int rate,
                           @RequestParam(name = "dishname") String dishName) {
-        try {
-            final Response response = new Response();
-            sDishDAO.getByName(dishName, (Dish dish) -> {
-                Rate rateObj = new Rate(appId, rate, dish);
+        try (final Session session = DatabaseHandler.getSession()) {
+            final Dish dish = sDishDAO.getByName(session, dishName);
+            final Rate rateObj = new Rate(appId, rate, dish);
 
-                if (sRateDAO.add(rateObj)) {
-                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
-                } else {
-                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
-                }
-            });
-
-            return response.toString();
+            if (sRateDAO.add(rateObj)) {
+                return Constants.JSON_RESPONSES.SUCCESS;
+            } else {
+                return Constants.JSON_RESPONSES.ERROR;
+            }
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_RATE, sCalendar.getTime().toString(), e));
 
@@ -244,17 +226,14 @@ public class ApiController {
 
     @RequestMapping("/app/api/delete/rate")
     public String deleteRate(@RequestParam(name = "id") int id){
-        try {
-            final Response response = new Response();
-            sRateDAO.getById(id, (Rate rate) -> {
-                if(rate != null && sRateDAO.delete(rate)){
-                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
-                } else {
-                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
-                }
-            });
+        try (final Session session = DatabaseHandler.getSession()) {
+            final Rate rate = sRateDAO.getById(session, id);
 
-            return response.toString();
+            if(rate != null && sRateDAO.delete(rate)){
+                return Constants.JSON_RESPONSES.SUCCESS;
+            } else {
+                return Constants.JSON_RESPONSES.ERROR;
+            }
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_RATE, sCalendar.getTime().toString(), e));
 
@@ -264,13 +243,10 @@ public class ApiController {
 
     @RequestMapping("/app/api/list/rates")
     public String listRates() {
-        try {
-            final Response response = new Response();
-            sRateDAO.getAll((List<Rate> rates) -> {
-                response.setResponseString(JsonWrapper.INSTANCE.wrapRates(rates));
-            });
+        try (final Session session = DatabaseHandler.getSession()) {
+            final List<Rate> rates = sRateDAO.getAll(session);
 
-            return response.toString();
+            return JsonWrapper.INSTANCE.wrapRates(rates);
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_RATES, sCalendar.getTime().toString(), e));
 
@@ -280,8 +256,8 @@ public class ApiController {
 
     @RequestMapping("/app/api/list/recommendations")
     public String listRecommendations(@RequestParam(name = "appid") String appId){
-        try {
-            List<Dish> recommendedDishes = sRecommendationHandler.getRecommendations(appId);
+        try (final Session session = DatabaseHandler.getSession()){
+            List<Dish> recommendedDishes = sRecommendationHandler.getRecommendations(session, appId);
 
             return JsonWrapper.INSTANCE.wrapDishes(recommendedDishes);
         } catch (Exception e) {

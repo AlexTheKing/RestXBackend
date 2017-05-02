@@ -26,11 +26,13 @@ public class DishDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public void getAll(ICallback<List<Dish>> callback){
-        DatabaseHandler.run((Session session) -> {
-            final List<Dish> list = (List<Dish>) session.createQuery("from Dish").list();
-            callback.execute(list);
+    public List<Dish> getAll(Session session){
+        final List[] list = new List[1];
+        DatabaseHandler.run(session, (Void) -> {
+            list[0] = (List<Dish>) session.createQuery("from Dish").list();
         });
+
+        return list[0];
     }
 
     public boolean update(Dish dish, int id){
@@ -44,13 +46,15 @@ public class DishDAO {
         return DatabaseHandler.run((Session session) -> session.delete(dish));
     }
 
-    public void getByName(String name, ICallback<Dish> callback) {
-        DatabaseHandler.run((Session session) -> {
+    public Dish getByName(Session session, String name) {
+        final Dish[] dish = new Dish[1];
+        DatabaseHandler.run(session, (Void) -> {
             Query query = session.createQuery("from Dish dish where dish.mName= :name");
             query.setParameter("name", name);
-            final Dish dish = (Dish) query.list().get(0);
-            callback.execute(dish);
+            dish[0] = (Dish) query.list().get(0);
         });
+
+        return dish[0];
     }
 
     @SuppressWarnings("unchecked")

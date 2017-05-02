@@ -16,20 +16,24 @@ public class CommentDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public void getAll(ICallback<List<Comment>> callback){
-        DatabaseHandler.run((Session session) -> {
-            List<Comment> list = (List<Comment>) session.createQuery("from Comment").list();
-            callback.execute(list);
+    public List<Comment> getAll(Session session){
+        final List[] list = new List[1];
+        DatabaseHandler.run(session, (Void) -> {
+            list[0] = (List<Comment>) session.createQuery("from Comment").list();
         });
+
+        return list[0];
     }
 
-    public void getById(int id, ICallback<Comment> callback) {
-        DatabaseHandler.run((Session session) -> {
+    public Comment getById(Session session, int id) {
+        final Comment[] comment = new Comment[1];
+        DatabaseHandler.run(session, (Void) -> {
             Query query = session.createQuery("from Comment comment where comment.mId= :id");
             query.setParameter("id", id);
-            Comment comment = (Comment) query.list().get(0);
-            callback.execute(comment);
+            comment[0] = (Comment) query.list().get(0);
         });
+
+        return comment[0];
     }
 
     public boolean delete(Comment comment){

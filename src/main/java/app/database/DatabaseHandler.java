@@ -25,11 +25,11 @@ public class DatabaseHandler {
         sFactory.close();
     }
 
-    public static boolean run(IWorker worker){
+    public static boolean run(ICallback<Session> callback){
         Session session = sFactory.openSession();
         try {
             session.beginTransaction();
-            worker.work(session);
+            callback.execute(session);
             session.getTransaction().commit();
 
             return true;
@@ -43,4 +43,25 @@ public class DatabaseHandler {
             session.close();
         }
     }
+
+    public static boolean run(Session session, ICallback<Void> callback){
+        try {
+            session.beginTransaction();
+            callback.execute(null);
+            session.getTransaction().commit();
+
+            return true;
+        }
+        catch (Exception e){
+            System.err.println(e);
+            session.getTransaction().rollback();
+
+            return false;
+        }
+    }
+
+    public static Session getSession(){
+        return sFactory.openSession();
+    }
+
 }

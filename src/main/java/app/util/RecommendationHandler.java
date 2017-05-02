@@ -5,6 +5,7 @@ import app.model.dish.Dish;
 import app.model.dish.dao.DishDAO;
 import app.model.rate.Rate;
 import app.model.rate.dao.RateDAO;
+import org.hibernate.Session;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -20,12 +21,12 @@ public class RecommendationHandler {
         mRateDAO = rateDAO;
     }
 
-    public List<Dish> getRecommendations(String appInstanceId){
-        return getRecommendations(appInstanceId, Constants.RECOMMENDATIONS.DEFAULT_COUNT);
+    public List<Dish> getRecommendations(Session session, String appInstanceId){
+        return getRecommendations(session, appInstanceId, Constants.RECOMMENDATIONS.DEFAULT_COUNT);
     }
 
-    public List<Dish> getRecommendations(String appInstanceId, int count){
-        HashMap<String, List<Rate>> ratesPerUser = getRatesPerUser();
+    public List<Dish> getRecommendations(Session session, String appInstanceId, int count){
+        HashMap<String, List<Rate>> ratesPerUser = getRatesPerUser(session);
         List<Rate> searchedUserRates = ratesPerUser.get(appInstanceId);
         ratesPerUser.remove(appInstanceId);
         HashMap<String, List<DishCorrelation>> correlatedRatesPerUser = new HashMap<>();
@@ -44,7 +45,7 @@ public class RecommendationHandler {
             }
         }
 
-        HashMap<Dish, List<CorrelatedRate>> correlatedRatesPerDish = transformIntoDishMap(correlatedRatesPerUser);
+        HashMap<Dish, List<CorrelatedRate>> correlatedRatesPerDish = transformIntoDishMap(session, correlatedRatesPerUser);
         HashMap<Dish, Double> userRatePerDish = calculateUserRatePerDish(correlatedRatesPerDish, coefficientPerUser);
 
         return sortAndReturnCount(userRatePerDish, count);
@@ -114,36 +115,36 @@ public class RecommendationHandler {
         }
     }
 
-    private HashMap<Dish, List<CorrelatedRate>> transformIntoDishMap(HashMap<String, List<DishCorrelation>> correlatedRatePerUser){
+    private HashMap<Dish, List<CorrelatedRate>> transformIntoDishMap(Session session, HashMap<String, List<DishCorrelation>> correlatedRatePerUser){
         final HashMap<Dish, List<CorrelatedRate>> correlatedRatePerDish = new HashMap<>();
-        mDishDAO.getAll((List<Dish> dishes) -> {
-            for (Dish dish : dishes) {
-                correlatedRatePerDish.put(dish, new ArrayList<>());
-            }
+        final List<Dish> dishes = mDishDAO.getAll(session);
 
-            for (String user : correlatedRatePerUser.keySet()) {
-                for (DishCorrelation dishCorrelation : correlatedRatePerUser.get(user)) {
-                    correlatedRatePerDish.get(dishCorrelation.getDish()).add(new CorrelatedRate(user, dishCorrelation.getCorrelatedRate()));
-                }
+        for (Dish dish : dishes) {
+            correlatedRatePerDish.put(dish, new ArrayList<>());
+        }
+
+        for (String user : correlatedRatePerUser.keySet()) {
+            for (DishCorrelation dishCorrelation : correlatedRatePerUser.get(user)) {
+                correlatedRatePerDish.get(dishCorrelation.getDish()).add(new CorrelatedRate(user, dishCorrelation.getCorrelatedRate()));
             }
-        });
+        }
 
         return correlatedRatePerDish;
     }
 
-    private HashMap<String, List<Rate>> getRatesPerUser(){
+    private HashMap<String, List<Rate>> getRatesPerUser(Session session){
         final HashMap<String, List<Rate>> ratesPerUser = new HashMap<>();
-        mRateDAO.getAll((List<Rate> allRates) -> {
-            for (Rate rate : allRates) {
-                String id = rate.getAppInstanceId();
+        final List<Rate> allRates = mRateDAO.getAll(session);
 
-                if(!ratesPerUser.containsKey(id)) {
-                    ratesPerUser.put(id, new ArrayList<>());
-                }
+        for (Rate rate : allRates) {
+            String id = rate.getAppInstanceId();
 
-                ratesPerUser.get(id).add(rate);
+            if(!ratesPerUser.containsKey(id)) {
+                ratesPerUser.put(id, new ArrayList<>());
             }
-        });
+
+            ratesPerUser.get(id).add(rate);
+        }
 
         return ratesPerUser;
     }
