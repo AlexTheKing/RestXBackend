@@ -1,6 +1,7 @@
 package app.model.rate.dao;
 
 import app.database.DatabaseHandler;
+import app.database.ICallback;
 import app.model.comment.Comment;
 import app.model.rate.Rate;
 import org.hibernate.Session;
@@ -15,24 +16,20 @@ public class RateDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Rate> getAll(){
-        final List[] list = new List[1];
+    public void getAll(ICallback<List<Rate>> callback){
         DatabaseHandler.run((Session session) -> {
-            list[0] = (List<Rate>) session.createQuery("from Rate").list();
+            List<Rate> list = (List<Rate>) session.createQuery("from Rate").list();
+            callback.execute(list);
         });
-
-        return list[0];
     }
 
-    public Rate getById(int id) {
-        final Rate[] rate = new Rate[1];
+    public void getById(int id, ICallback<Rate> callback) {
         DatabaseHandler.run((Session session) -> {
             Query query = session.createQuery("from Rate rate where rate.mId= :id");
             query.setParameter("id", id);
-            rate[0] = (Rate) query.list().get(0);
+            Rate rate = (Rate) query.list().get(0);
+            callback.execute(rate);
         });
-
-        return rate[0];
     }
 
     public boolean delete(Rate rate){
@@ -40,14 +37,12 @@ public class RateDAO {
     }
 
     @SuppressWarnings("unchecked")
-    public List<Rate> getByAppInstanceId(String appInstanceId) {
-        final List[] rates = new List[1];
+    public void getByAppInstanceId(String appInstanceId, ICallback<List<Rate>> callback) {
         DatabaseHandler.run((Session session) -> {
             Query query = session.createQuery("from Rate rate where rate.mAppInstanceId= :id");
             query.setParameter("id", appInstanceId);
-            rates[0] = (List<Rate>) query.list();
+            List<Rate> rates = (List<Rate>) query.list();
+            callback.execute(rates);
         });
-
-        return rates[0];
     }
 }

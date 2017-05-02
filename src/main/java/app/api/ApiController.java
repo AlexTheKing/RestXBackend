@@ -11,6 +11,7 @@ import app.model.rate.Rate;
 import app.model.rate.dao.RateDAO;
 import app.util.Constants;
 import app.util.RecommendationHandler;
+import app.util.Response;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,7 +39,7 @@ public class ApiController {
         String LIST_TYPES = "[%s] [LIST TYPES] %s";
         String LIST_DISHES = "[%s] [LIST DISHES] %s";
         String LIST_COMMENTS = "[%s] [LIST COMMENTS] %s";
-        String LIST_RATINGS = "[%s] [LIST RATINGS] %s";
+        String LIST_RATES = "[%s] [LIST RATINGS] %s";
         String LIST_RECOMMENDATIONS = "[%s] [LIST RECOMMENDATIONS] %s";
     }
 
@@ -113,16 +114,16 @@ public class ApiController {
     @RequestMapping("/app/api/delete/dish")
     public String deleteDish(@RequestParam(name = "name") String name) {
         try {
-            final String[] result = new String[1];
+            final Response response = new Response();
             sDishDAO.getByName(name, (Dish dish) -> {
                 if(dish != null && sDishDAO.delete(dish)){
-                    result[0] = Constants.JSON_RESPONSES.SUCCESS;
+                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
-                    result[0] = Constants.JSON_RESPONSES.ERROR;
+                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
                 }
             });
 
-            return result[0];
+            return response.toString();
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_DISH, sCalendar.getTime().toString(), e));
 
@@ -144,12 +145,12 @@ public class ApiController {
     @RequestMapping("/app/api/list/dishes")
     public String listDishes() {
         try {
-            final String[] result = new String[1];
+            final Response response = new Response();
             sDishDAO.getAll((List<Dish> dishes) -> {
-                result[0] = JsonWrapper.INSTANCE.wrapDishes(dishes);
+                response.setResponseString(JsonWrapper.INSTANCE.wrapDishes(dishes));
             });
 
-            return result[0];
+            return response.toString();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_DISHES, sCalendar.getTime().toString(), e));
 
@@ -162,18 +163,18 @@ public class ApiController {
                              @RequestParam(name = "comment") String comment,
                              @RequestParam(name = "dishname") String dishName) {
         try {
-            final String[] result = new String[1];
+            final Response response = new Response();
             sDishDAO.getByName(dishName, (Dish dish) -> {
                 Comment commentObj = new Comment(appId, comment, dish);
 
                 if (sCommentDAO.add(commentObj)) {
-                    result[0] = Constants.JSON_RESPONSES.SUCCESS;
+                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
-                    result[0] = Constants.JSON_RESPONSES.ERROR;
+                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
                 }
             });
 
-            return result[0];
+            return response.toString();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_COMMENT, sCalendar.getTime().toString(), e));
 
@@ -184,13 +185,16 @@ public class ApiController {
     @RequestMapping("/app/api/delete/comment")
     public String deleteComment(@RequestParam(name = "id") int id){
         try {
-            Comment comment = sCommentDAO.getById(id);
+            final Response response = new Response();
+            sCommentDAO.getById(id, (Comment comment) -> {
+                if(comment != null && sCommentDAO.delete(comment)){
+                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
 
-            if(comment != null && sCommentDAO.delete(comment)){
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            return response.toString();
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_COMMENT, sCalendar.getTime().toString(), e));
 
@@ -201,7 +205,12 @@ public class ApiController {
     @RequestMapping("/app/api/list/comments")
     public String listComments() {
         try {
-            return JsonWrapper.INSTANCE.wrapComments(sCommentDAO.getAll());
+            final Response response = new Response();
+            sCommentDAO.getAll((List<Comment> comments) -> {
+                response.setResponseString(JsonWrapper.INSTANCE.wrapComments(comments));
+            });
+
+            return response.toString();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_COMMENTS, sCalendar.getTime().toString(), e));
 
@@ -214,18 +223,18 @@ public class ApiController {
                           @RequestParam(name = "rate") int rate,
                           @RequestParam(name = "dishname") String dishName) {
         try {
-            final String[] result = new String[1];
+            final Response response = new Response();
             sDishDAO.getByName(dishName, (Dish dish) -> {
                 Rate rateObj = new Rate(appId, rate, dish);
 
                 if (sRateDAO.add(rateObj)) {
-                    result[0] = Constants.JSON_RESPONSES.SUCCESS;
+                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
-                    result[0] = Constants.JSON_RESPONSES.ERROR;
+                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
                 }
             });
 
-            return result[0];
+            return response.toString();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_RATE, sCalendar.getTime().toString(), e));
 
@@ -236,13 +245,16 @@ public class ApiController {
     @RequestMapping("/app/api/delete/rate")
     public String deleteRate(@RequestParam(name = "id") int id){
         try {
-            Rate rate = sRateDAO.getById(id);
+            final Response response = new Response();
+            sRateDAO.getById(id, (Rate rate) -> {
+                if(rate != null && sRateDAO.delete(rate)){
+                    response.setResponseString(Constants.JSON_RESPONSES.SUCCESS);
+                } else {
+                    response.setResponseString(Constants.JSON_RESPONSES.ERROR);
+                }
+            });
 
-            if(rate != null && sRateDAO.delete(rate)){
-                return Constants.JSON_RESPONSES.SUCCESS;
-            } else {
-                return Constants.JSON_RESPONSES.ERROR;
-            }
+            return response.toString();
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_RATE, sCalendar.getTime().toString(), e));
 
@@ -253,9 +265,14 @@ public class ApiController {
     @RequestMapping("/app/api/list/rates")
     public String listRates() {
         try {
-            return JsonWrapper.INSTANCE.wrapRates(sRateDAO.getAll());
+            final Response response = new Response();
+            sRateDAO.getAll((List<Rate> rates) -> {
+                response.setResponseString(JsonWrapper.INSTANCE.wrapRates(rates));
+            });
+
+            return response.toString();
         } catch (Exception e) {
-            System.err.println(String.format(ACTIONS.LIST_RATINGS, sCalendar.getTime().toString(), e));
+            System.err.println(String.format(ACTIONS.LIST_RATES, sCalendar.getTime().toString(), e));
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -265,6 +282,7 @@ public class ApiController {
     public String listRecommendations(@RequestParam(name = "appid") String appId){
         try {
             List<Dish> recommendedDishes = sRecommendationHandler.getRecommendations(appId);
+
             return JsonWrapper.INSTANCE.wrapDishes(recommendedDishes);
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_RECOMMENDATIONS, sCalendar.getTime().toString(), e));

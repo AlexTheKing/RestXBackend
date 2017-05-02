@@ -21,8 +21,7 @@ public class RecommendationHandler {
     }
 
     public List<Dish> getRecommendations(String appInstanceId){
-        int defaultCount = 5;
-        return getRecommendations(appInstanceId, defaultCount);
+        return getRecommendations(appInstanceId, Constants.RECOMMENDATIONS.DEFAULT_COUNT);
     }
 
     public List<Dish> getRecommendations(String appInstanceId, int count){
@@ -133,18 +132,18 @@ public class RecommendationHandler {
     }
 
     private HashMap<String, List<Rate>> getRatesPerUser(){
-        List<Rate> allRates = mRateDAO.getAll();
-        HashMap<String, List<Rate>> ratesPerUser = new HashMap<>();
+        final HashMap<String, List<Rate>> ratesPerUser = new HashMap<>();
+        mRateDAO.getAll((List<Rate> allRates) -> {
+            for (Rate rate : allRates) {
+                String id = rate.getAppInstanceId();
 
-        for (Rate rate : allRates) {
-            String id = rate.getAppInstanceId();
+                if(!ratesPerUser.containsKey(id)) {
+                    ratesPerUser.put(id, new ArrayList<>());
+                }
 
-            if(!ratesPerUser.containsKey(id)) {
-                ratesPerUser.put(id, new ArrayList<>());
+                ratesPerUser.get(id).add(rate);
             }
-
-            ratesPerUser.get(id).add(rate);
-        }
+        });
 
         return ratesPerUser;
     }

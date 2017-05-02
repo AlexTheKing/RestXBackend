@@ -18,4 +18,8 @@ public class Constants {
         String COMMENTS = "comments";
     }
 
+    public interface RECOMMENDATIONS {
+        int DEFAULT_COUNT = 5;
+    }
+
 }
