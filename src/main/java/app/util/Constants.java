@@ -22,4 +22,7 @@ public class Constants {
         int DEFAULT_COUNT = 5;
     }
 
+    public interface LOG {
+        String ERROR = "ERROR ";
+    }
 }

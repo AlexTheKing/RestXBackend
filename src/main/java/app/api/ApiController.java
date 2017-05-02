@@ -66,6 +66,7 @@ public class ApiController {
                     System.out.println(String.format(ACTIONS.ADD_DISH, sCalendar.getTime().toString(), dish.toString()));
                     response.setContent(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
+                    System.out.println(String.format(ACTIONS.ADD_DISH, sCalendar.getTime(), Constants.LOG.ERROR + dish.toString()));
                     response.setContent(Constants.JSON_RESPONSES.ERROR);
                 }
             });
@@ -73,6 +74,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_DISH, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -108,6 +110,7 @@ public class ApiController {
                     System.out.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime().toString(), dish.toString()));
                     response.setContent(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
+                    System.out.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime(), Constants.LOG.ERROR + dish.toString()));
                     response.setContent(Constants.JSON_RESPONSES.ERROR);
                 }
             });
@@ -115,6 +118,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -129,8 +133,10 @@ public class ApiController {
 
             DataEnvironment.run((Void) -> {
                 if (dish != null && dishDAO.delete(dish)) {
+                    System.out.println(String.format(ACTIONS.DELETE_DISH, sCalendar.getTime(), dish.toString()));
                     response.setContent(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
+                    System.out.println(String.format(ACTIONS.DELETE_DISH, sCalendar.getTime(), Constants.LOG.ERROR));
                     response.setContent(Constants.JSON_RESPONSES.ERROR);
                 }
             });
@@ -138,6 +144,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.DELETE_DISH, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -156,6 +163,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_TYPES, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -174,6 +182,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_DISHES, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -202,6 +211,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_COMMENT, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -225,6 +235,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_COMMENT, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -241,6 +252,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_COMMENTS, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -269,6 +281,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_RATE, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -292,6 +305,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e){
             System.err.println(String.format(ACTIONS.DELETE_RATE, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -308,6 +322,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_RATES, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
@@ -328,6 +343,7 @@ public class ApiController {
             return response.getContent();
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.LIST_RECOMMENDATIONS, sCalendar.getTime().toString(), e));
+            e.printStackTrace();
 
             return Constants.JSON_RESPONSES.ERROR;
         }
