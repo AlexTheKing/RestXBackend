@@ -20,6 +20,7 @@ repositories {
 }
 
 dependencies {
+    compile "org.springframework.boot:spring-boot-starter-thymeleaf"
     compile "org.springframework.boot:spring-boot-starter-web"
     compile "org.hibernate:hibernate-core:5.2.10.Final"
     compile "mysql:mysql-connector-java:5.1.6"

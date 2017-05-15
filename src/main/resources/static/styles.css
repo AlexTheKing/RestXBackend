@@ -1,0 +1,21 @@
+.header {
+    text-align: center;
+}
+
+.button {
+    padding: 14px;
+    background-color: #FF314F;
+    display: block;
+    border: 1px solid white;
+    text-align: center;
+    margin: 12px;
+}
+
+.button:hover {
+    background-color: #FF314FAA;
+    box-shadow: 4px 4px #ccc;
+}
+
+a, a:link, a:visited, a:hover, a:active {
+    text-decoration: none;
+}
