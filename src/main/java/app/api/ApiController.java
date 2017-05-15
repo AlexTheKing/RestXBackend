@@ -10,6 +10,7 @@ import app.model.entities.rate.Rate;
 import app.model.dao.RateDAO;
 import app.util.Constants;
 import app.model.DataEnvironment;
+import app.util.Response;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,7 +60,7 @@ public class ApiController {
 
             final Cost costObj = new Cost(firstOrder, secondOrder);
             final Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 if (dishDAO.add(dish)) {
@@ -103,7 +104,7 @@ public class ApiController {
 
             final Cost costObj = new Cost(firstOrder, secondOrder);
             final Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 if (dishDAO.update(dish, id)) {
@@ -129,7 +130,7 @@ public class ApiController {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final Dish dish = dishDAO.getByName(name);
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 if (dish != null && dishDAO.delete(dish)) {
@@ -154,7 +155,7 @@ public class ApiController {
     public String listTypes() {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 response.setContent(JsonWrapper.INSTANCE.wrapTypes(dishDAO.getTypes()));
@@ -173,7 +174,7 @@ public class ApiController {
     public String listDishes() {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 response.setContent(JsonWrapper.INSTANCE.wrapDishes(dishDAO.getAll()));
@@ -195,7 +196,7 @@ public class ApiController {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 final Dish dish = dishDAO.getByName(dishName);
@@ -222,7 +223,7 @@ public class ApiController {
         try {
             final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
             final Comment comment = commentDAO.getById(id);
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 if(comment != null && commentDAO.delete(comment)){
@@ -245,7 +246,7 @@ public class ApiController {
     public String listComments() {
         try {
             final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapComments(commentDAO.getAll())));
 
@@ -265,7 +266,7 @@ public class ApiController {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 final Dish dish = dishDAO.getByName(dishName);
@@ -292,7 +293,7 @@ public class ApiController {
         try {
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
             final Rate rate = rateDAO.getById(id);
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 if(rate != null && rateDAO.delete(rate)){
@@ -315,7 +316,7 @@ public class ApiController {
     public String listRates() {
         try {
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapRates(rateDAO.getAll())));
 
@@ -333,7 +334,7 @@ public class ApiController {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
-            final Response response = new Response();
+            final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
                 RecommendationHandler handler = new RecommendationHandler(dishDAO, rateDAO);
