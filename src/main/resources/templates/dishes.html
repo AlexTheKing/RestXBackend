@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Lato|Lobster+Two" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Dish List</title>
+</head>
+<body>
+    <table>
+        <tr class="fstrow">
+            <th>NAME</th>
+            <th>WEIGHT</th>
+            <th>TYPE</th>
+            <th>COST</th>
+            <th>CURRENCY</th>
+            <th>DESCRIPTION</th>
+            <th>AVERAGE RATE</th>
+            <th>INGREDIENTS</th>
+            <th>BITMAP URL</th>
+        </tr>
+        <tr th:each="dish : ${dishes}">
+            <td th:text="${dish.getName()}">Name</td>
+            <td style="text-align: center" th:text="${dish.getWeight()}">Weight</td>
+            <td th:text="${dish.getType()}">Type</td>
+            <td style="text-align: center" th:text="${dish.getCost()}">Cost</td>
+            <td style="text-align: center" th:text="${dish.getCurrency()}">Currency</td>
+            <td th:text="${dish.getDescription()}">Description</td>
+            <td style="text-align: center" th:text="${dish.getPrettyAverageEstimation()}">Average rate</td>
+            <td th:text="${dish.getIngredientsAsString()}">Ingredients</td>
+            <td><a href="${dish.getBitmapUrl()}" th:text="${dish.getBitmapUrl()}">Bitmap url</a></td>
+        </tr>
+    </table>
+</body>
+</html>
