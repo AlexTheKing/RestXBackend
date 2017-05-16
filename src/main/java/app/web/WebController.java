@@ -19,16 +19,24 @@ public class WebController {
         return "index";
     }
 
-    @RequestMapping("/dish/list")
+    @RequestMapping("/dishes")
     public String getDishList(Model model) {
         DishDAO dishDAO = DataEnvironment.getDishDAO();
         Response<List<Dish>> response = new Response<>();
 
-        DatabaseHandler.run((Void) -> response.setContent(dishDAO.getAll()));
+        DataEnvironment.run((Void) -> {
+            List<Dish> dishes = dishDAO.getAll();
+
+            for(Dish dish : dishes) {
+                dish.calcAverageEstimation();
+            }
+
+            response.setContent(dishes);
+        });
 
         model.addAttribute("dishes", response.getContent());
 
-        return "dishlist";
+        return "dishes";
     }
 
 }

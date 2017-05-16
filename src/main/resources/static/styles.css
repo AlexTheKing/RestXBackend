@@ -1,21 +1,119 @@
+table, .content, .button, .menu {
+    font-family: 'Lato', sans-serif;
+}
+
+/*Pink color*/
+.pink {
+    background-color: rgb(255, 49, 79);
+}
+
+.menu {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: rgb(255, 49, 79);
+}
+
+.menu li {
+    float: left;
+    transition: background-color 2s;
+    transition: box-shadow 0.5s;
+    width: 25%;
+}
+
+.menu li:hover {
+    background-color: rgb(225, 89, 119);
+    box-shadow: 0px 8px 12px 8px rgb(225, 19, 49);
+}
+
+.menu li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    font-size: 24px;
+}
+
 .header {
     text-align: center;
+    display: block;
+    color: #444;
+    font-family: 'Lobster Two', cursive;
+    width: 100%;
+    font-size: 48px;
+    margin-top: 32px;
+}
+
+.content {
+    background-color: #ddd;
+    font-size: 26px;
+    padding: 16px;
+    box-shadow: 4px 4px 8px #aaa;
 }
 
 .button {
     padding: 14px;
-    background-color: #FF314F;
-    display: block;
-    border: 1px solid white;
+    display: inline-block;
     text-align: center;
+    font-size: 24px;
     margin: 12px;
+    text-transform: uppercase;
+    transition: background-color 2s;
+    transition: box-shadow 0.5s;
+    padding: 16px;
+    border: none;
 }
 
+.button a {
+    color: white;
+}
+
+
 .button:hover {
-    background-color: #FF314FAA;
-    box-shadow: 4px 4px #ccc;
+    /*Pink color with 0.8 alpha*/
+    background-color: rgba(255, 49, 79, 0.8);
+    box-shadow: 8px 8px 12px #666;
 }
 
 a, a:link, a:visited, a:hover, a:active {
     text-decoration: none;
+}
+
+table {
+    width: 100%;
+}
+
+.firstrow {
+    background-color: #444;
+    color: white;
+    text-size: 24px;
+    margin: 8px;
+    transition: box-shadow 0.5s;
+}
+
+.firstrow:hover {
+    box-shadow: 1px 1px #ccc;
+}
+
+.firstrow th {
+    padding: 16px;
+    border-left: 1px solid black;
+    border-right: 1px solid black;
+}
+
+tr:nth-child(even) {
+    background-color: #CCCCCC;
+}
+
+td {
+    padding: 8px;
+}
+
+.activatedrow {
+    transition: box-shadow 1s;
+}
+
+.activatedrow:hover {
+    box-shadow: 0px -2px 8px 4px #888;
 }

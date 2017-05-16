@@ -1,19 +1,28 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Lato|Lobster+Two" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
     <title>Welcome to RestaurantX</title>
 </head>
 <body>
-    <h1>
-        <p class="header">Welcome to RestaurantX</p>
+    <ul class="menu">
+        <li><a th:href="@{/}">Main</a></li>
+        <li><a th:href="@{/dishes}">Dishes</a></li>
+        <li><a th:href="@{/rates}">Rates</a></li>
+        <li><a th:href="@{/comments}">Comments</a></li>
+    </ul>
+    <h1 class="header">
+        Welcome to RestaurantX
     </h1>
-    <p>This is the opensource client-server application for owners of restaurants,<br/>
-        Where they can easily manage their menu and show it to the users with the help of this application
-    </p>
-    <p>For more info go to:</p>
-    <a class="button" href="https://github.com/alextheking/restaurantx">Android app</a>
-    <a class="button" href="https://github.com/alextheking/restxbackend">Backend (REST API + DB Managing App)</a>
+    <div class="content">
+        <p>This is the opensource client-server application for owners of restaurants,<br/>
+            Where they can easily manage their menu and show it to the users with the help of this application
+        </p>
+        <p>For more info visit:</p>
+        <button class="pink button"><a href="https://github.com/alextheking/restaurantx">Android app page</a></button>
+        <button class="pink button"><a href="https://github.com/alextheking/restxbackend">Backend page</a></button>
+    </div>
 </body>
 </html>

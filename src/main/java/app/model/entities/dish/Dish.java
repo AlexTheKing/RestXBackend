@@ -120,7 +120,15 @@ public class Dish {
         mDescription = description;
     }
 
-    public float getAverageEstimation() {
+    public float getAverageEstimation(){
+        return mAverageEstimation;
+    }
+
+    public String getPrettyAverageEstimation(){
+        return String.format("%.2f", mAverageEstimation);
+    }
+
+    public float calcAverageEstimation() {
         if(mRates.size() == 0){
             return 0;
         } else {
@@ -146,6 +154,16 @@ public class Dish {
 
     public void setIngredients(String[] ingredients) {
         mIngredients = ingredients;
+    }
+
+    public String getIngredientsAsString(){
+        StringBuilder builder = new StringBuilder();
+
+        for(String ingredient : mIngredients){
+            builder.append(ingredient).append(", ");
+        }
+
+        return builder.toString().substring(0, builder.length() - 1);
     }
 
     public String getBitmapUrl() {

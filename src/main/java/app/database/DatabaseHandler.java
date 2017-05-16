@@ -36,6 +36,7 @@ public class DatabaseHandler {
         }
         catch (Exception e){
             System.err.println(e);
+            e.printStackTrace();
             session.getTransaction().rollback();
 
             return false;
@@ -54,6 +55,7 @@ public class DatabaseHandler {
         }
         catch (Exception e){
             System.err.println(e);
+            e.printStackTrace();
             session.getTransaction().rollback();
 
             return false;

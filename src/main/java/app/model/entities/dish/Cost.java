@@ -36,4 +36,9 @@ public class Cost {
     public void setSecondOrder(int secondOrder) {
         this.mSecondOrder = secondOrder;
     }
+
+    @Override
+    public String toString(){
+        return mFirstOrder + "." + mSecondOrder;
+    }
 }

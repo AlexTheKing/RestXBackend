@@ -27,8 +27,8 @@
         <!-- Echo all executed SQL to stdout -->
         <property name="show_sql">true</property>
 
-        <!-- Drop and re-create the app.database schema on startup -->
-        <property name="hbm2ddl.auto">create</property>
+        <!-- Update the app.database schema on startup -->
+        <property name="hbm2ddl.auto">update</property>
 
         <!-- Names the annotated entity class -->
         <mapping class="app.model.entities.dish.Dish"/>

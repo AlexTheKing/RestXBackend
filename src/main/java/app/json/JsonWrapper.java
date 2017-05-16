@@ -49,7 +49,7 @@ public enum JsonWrapper {
             dishObj.put(DishMapping.CURRENCY, dish.getCurrency());
             dishObj.put(DishMapping.WEIGHT, dish.getWeight());
             dishObj.put(DishMapping.DESCRIPTION, dish.getDescription());
-            dishObj.put(DishMapping.AVERAGE_ESTIMATION, dish.getAverageEstimation());
+            dishObj.put(DishMapping.AVERAGE_ESTIMATION, dish.calcAverageEstimation());
             dishObj.put(DishMapping.BITMAP_URL, dish.getBitmapUrl());
             ArrayNode ingredientsArray = dishObj.putArray(DishMapping.INGREDIENTS);
 
