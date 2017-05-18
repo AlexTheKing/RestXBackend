@@ -2,7 +2,9 @@ package app.model.dao;
 
 import app.database.DatabaseHandler;
 import app.database.validator.Validator;
+import app.model.entities.comment.Comment;
 import app.model.entities.dish.Dish;
+import app.model.entities.rate.Rate;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
@@ -21,25 +23,45 @@ public class DishDAO extends AbstractDAO{
     }
 
     public boolean add(Dish dish){
-        return mValidator.validate(dish) && DatabaseHandler.run((Session session) -> session.save(dish));
+        final Session session = getSession();
+
+        return mValidator.validate(dish) && DatabaseHandler.run(session, (Void) -> session.save(dish));
     }
 
     public boolean update(Dish dish, int id){
-        return mValidator.validate(dish) && DatabaseHandler.run((Session session) -> {
+        final Session session = getSession();
+
+        return mValidator.validate(dish) && DatabaseHandler.run(session, (Void) -> {
             dish.setId(id);
             session.update(dish);
         });
     }
 
     public boolean delete(Dish dish){
-        return DatabaseHandler.run((Session session) -> session.delete(dish));
+        final Session session = getSession();
+
+        return DatabaseHandler.run(session, (Void) -> {
+            final List<Comment> comments = dish.getComments();
+            final List<Rate> rates = dish.getRates();
+
+            for(Comment comment : comments){
+                session.delete(comment);
+            }
+
+            for(Rate rate : rates){
+                session.delete(rate);
+            }
+
+            session.delete(dish);
+        });
     }
 
     @SuppressWarnings("unchecked")
     public List<String> getTypes() {
         final List[] list = new List[1];
+        final Session session = getSession();
 
-        DatabaseHandler.run((Session session) -> {
+        DatabaseHandler.run(session, (Void) -> {
             list[0] = (List<String>) session.createQuery("select distinct dish.mType from Dish dish").list();
         });
 

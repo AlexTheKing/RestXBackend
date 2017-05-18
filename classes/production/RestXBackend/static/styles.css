@@ -1,10 +1,26 @@
-table, .content, .button, .menu {
+table, .content, .button, .menu, form, .error {
     font-family: 'Lato', sans-serif;
 }
 
 /*Pink color*/
 .pink {
     background-color: rgb(255, 49, 79);
+}
+
+.font24 {
+    font-size: 24px;
+}
+
+.font18 {
+    font-size: 18px;
+}
+
+.font48 {
+    font-size: 48px;
+}
+
+.font12 {
+    font-size: 12px;
 }
 
 .menu {
@@ -32,7 +48,6 @@ table, .content, .button, .menu {
     color: white;
     text-align: center;
     padding: 14px 16px;
-    font-size: 24px;
 }
 
 .header {
@@ -41,13 +56,11 @@ table, .content, .button, .menu {
     color: #444;
     font-family: 'Lobster Two', cursive;
     width: 100%;
-    font-size: 48px;
     margin-top: 32px;
 }
 
 .content {
     background-color: #ddd;
-    font-size: 26px;
     padding: 16px;
     box-shadow: 4px 4px 8px #aaa;
 }
@@ -56,16 +69,12 @@ table, .content, .button, .menu {
     padding: 14px;
     display: inline-block;
     text-align: center;
-    font-size: 24px;
     margin: 12px;
     text-transform: uppercase;
     transition: background-color 2s;
     transition: box-shadow 0.5s;
     padding: 16px;
     border: none;
-}
-
-.button a {
     color: white;
 }
 
@@ -87,7 +96,6 @@ table {
 .firstrow {
     background-color: #444;
     color: white;
-    text-size: 24px;
     margin: 8px;
     transition: box-shadow 0.5s;
 }
@@ -116,4 +124,47 @@ td {
 
 .activatedrow:hover {
     box-shadow: 0px -2px 8px 4px #888;
+}
+
+.hide {
+    display: none;
+}
+
+.error {
+    background-color: rgb(225, 225, 225);
+    color: rgb(255, 49, 79);
+    padding: 16px;
+    display: block;
+    margin: 8px;
+}
+
+.formElem {
+    border: none;
+    outline: 0 none;
+    padding: 5px 0px 5px 5px;
+    border-radius: 2px;
+    background: #ccc;
+    font-size: 16px
+    transition: box-shadow 1s;
+}
+
+.formElem:focus {
+    box-shadow: 4px 4px 8px #ccc;
+}
+
+form {
+    display: none;
+}
+
+form button {
+    margin: 16px;
+}
+
+.row {
+    width: 100%;
+}
+
+.inline {
+    display: inline-block;
+    margin: 16px;
 }

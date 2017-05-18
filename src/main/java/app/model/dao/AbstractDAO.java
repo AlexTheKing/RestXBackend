@@ -6,7 +6,7 @@ public abstract class AbstractDAO {
 
     private Session mSession;
 
-    public Session getSession() {
+    Session getSession() {
         checkSession();
         return mSession;
     }

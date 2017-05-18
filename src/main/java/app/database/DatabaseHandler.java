@@ -26,7 +26,7 @@ public class DatabaseHandler {
     }
 
     public static boolean run(ICallback<Session> callback){
-        Session session = sFactory.openSession();
+        final Session session = sFactory.openSession();
         try {
             session.beginTransaction();
             callback.execute(session);
@@ -57,6 +57,7 @@ public class DatabaseHandler {
             System.err.println(e);
             e.printStackTrace();
             session.getTransaction().rollback();
+            session.close();
 
             return false;
         }

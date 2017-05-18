@@ -1,6 +1,7 @@
 package app.api;
 
 import app.json.JsonWrapper;
+import app.model.dto.DishDTO;
 import app.model.entities.comment.Comment;
 import app.model.dao.CommentDAO;
 import app.model.entities.dish.Cost;
@@ -49,17 +50,8 @@ public class ApiController {
                           @RequestParam(name = "bitmapurl") String bitmapUrl) {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
-            final String[] costSplitted = cost.split(Constants.URI.COST_SPLITTER);
-            final String[] ingredientsAsArray = ingredients.split(Constants.URI.INGREDIENTS_SPLITTER);
-            final int firstOrder = Integer.parseInt(costSplitted[0]);
-            int secondOrder = 0;
-
-            if(costSplitted.length == 2){
-                secondOrder = Integer.parseInt(costSplitted[1]);
-            }
-
-            final Cost costObj = new Cost(firstOrder, secondOrder);
-            final Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
+            final DishDTO dishDTO = new DishDTO(name, weight, type, cost, currency, description, ingredients, bitmapUrl);
+            final Dish dish = dishDTO.convert();
             final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
@@ -93,17 +85,8 @@ public class ApiController {
                              @RequestParam(name = "bitmapurl") String bitmapUrl) {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
-            final String[] costSplitted = cost.split(Constants.URI.COST_SPLITTER);
-            final String[] ingredientsAsArray = ingredients.split(Constants.URI.INGREDIENTS_SPLITTER);
-            final int firstOrder = Integer.parseInt(costSplitted[0]);
-            int secondOrder = 0;
-
-            if(costSplitted.length == 2){
-                secondOrder = Integer.parseInt(costSplitted[1]);
-            }
-
-            final Cost costObj = new Cost(firstOrder, secondOrder);
-            final Dish dish = new Dish(name, weight, type, costObj, currency, description, ingredientsAsArray, bitmapUrl);
+            final DishDTO dishDTO = new DishDTO(name, weight, type, cost, currency, description, ingredients, bitmapUrl);
+            final Dish dish = dishDTO.convert();
             final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
@@ -129,10 +112,11 @@ public class ApiController {
     public String deleteDish(@RequestParam(name = "name") String name) {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
-            final Dish dish = dishDAO.getByName(name);
             final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
+                final Dish dish = dishDAO.getByName(name);
+
                 if (dish != null && dishDAO.delete(dish)) {
                     System.out.println(String.format(ACTIONS.DELETE_DISH, sCalendar.getTime(), dish.toString()));
                     response.setContent(Constants.JSON_RESPONSES.SUCCESS);
@@ -222,10 +206,11 @@ public class ApiController {
     public String deleteComment(@RequestParam(name = "id") int id){
         try {
             final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
-            final Comment comment = commentDAO.getById(id);
             final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
+                final Comment comment = commentDAO.getById(id);
+
                 if(comment != null && commentDAO.delete(comment)){
                     response.setContent(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
@@ -292,10 +277,11 @@ public class ApiController {
     public String deleteRate(@RequestParam(name = "id") int id){
         try {
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
-            final Rate rate = rateDAO.getById(id);
             final Response<String> response = new Response<>();
 
             DataEnvironment.run((Void) -> {
+                final Rate rate = rateDAO.getById(id);
+
                 if(rate != null && rateDAO.delete(rate)){
                     response.setContent(Constants.JSON_RESPONSES.SUCCESS);
                 } else {

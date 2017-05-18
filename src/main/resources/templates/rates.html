@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <link href="https://fonts.googleapis.com/css?family=Lato|Lobster+Two" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+    <title>Rates List</title>
+</head>
+<body>
+<ul class="menu">
+    <li><a class="font24" th:href="@{/}">Main</a></li>
+    <li><a class="font24" th:href="@{/dishes}">Dishes</a></li>
+    <li><a class="font24" th:href="@{/rates}">Rates</a></li>
+    <li><a class="font24" th:href="@{/comments}">Comments</a></li>
+</ul>
+<table>
+    <tr class="firstrow">
+        <th>APP ID</th>
+        <th>DISH</th>
+        <th>RATE</th>
+    </tr>
+    <tr class="activatedrow" th:each="rate : ${rates}">
+        <td th:text="${dish.getAppInstanceId()}">App id</td>
+        <td th:text="${dish.getDish().getName()}">Dish</td>
+        <td style="text-align: center" th:text="${dish.getRate()}">Rate</td>
+    </tr>
+</table>
+</body>
+</html>

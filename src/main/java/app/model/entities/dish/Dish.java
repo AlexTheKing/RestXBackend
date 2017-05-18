@@ -129,19 +129,23 @@ public class Dish {
     }
 
     public float calcAverageEstimation() {
-        if(mRates.size() == 0){
-            return 0;
+        if(mRates != null){
+            if(mRates.size() == 0){
+                return 0;
+            } else {
+                mAverageEstimation = 0;
+
+                for (Rate rate : mRates) {
+                    mAverageEstimation += rate.getRate();
+                }
+
+                mAverageEstimation /= mRates.size();
+            }
         } else {
             mAverageEstimation = 0;
-
-            for (Rate rate : mRates) {
-                mAverageEstimation += rate.getRate();
-            }
-
-            mAverageEstimation /= mRates.size();
-
-            return mAverageEstimation;
         }
+
+        return mAverageEstimation;
     }
 
     public void setAverageEstimation(float averageEstimation) {
