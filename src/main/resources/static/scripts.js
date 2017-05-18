@@ -18,3 +18,7 @@ function toggle(idelem, idbutton, showhide) {
         button.innerText = showhide[0];
     }
 }
+
+window.onload = function() {
+    $('#dishadd').hide();
+}

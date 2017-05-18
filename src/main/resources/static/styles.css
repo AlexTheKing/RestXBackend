@@ -152,10 +152,6 @@ td {
     box-shadow: 4px 4px 8px #ccc;
 }
 
-form {
-    display: none;
-}
-
 form button {
     margin: 16px;
 }

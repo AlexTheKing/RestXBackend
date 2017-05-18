@@ -161,13 +161,14 @@ public class Dish {
     }
 
     public String getIngredientsAsString(){
-        StringBuilder builder = new StringBuilder();
+        final StringBuilder builder = new StringBuilder();
+        final String SPLITTER = ", ";
 
         for(String ingredient : mIngredients){
-            builder.append(ingredient).append(", ");
+            builder.append(ingredient).append(SPLITTER);
         }
 
-        return builder.toString().substring(0, builder.length() - 1);
+        return builder.toString().substring(0, builder.length() - SPLITTER.length());
     }
 
     public String getBitmapUrl() {
