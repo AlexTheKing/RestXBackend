@@ -24,12 +24,11 @@ import java.util.List;
 public class WebController {
 
     @RequestMapping("/")
-    public String getMain(Model model) {
+    public String getIndex(Model model) {
         return "index";
     }
 
-    @GetMapping("/dishes")
-    public String getDishList(Model model) {
+    private Response<List<Dish>> getDishes(){
         DishDAO dishDAO = DataEnvironment.getDishDAO();
         Response<List<Dish>> response = new Response<>();
 
@@ -43,6 +42,39 @@ public class WebController {
             response.setContent(dishes);
         });
 
+        return response;
+    }
+
+    private Response<Boolean> addDish(DishDTO dishDTO) {
+        DishDAO dishDAO = DataEnvironment.getDishDAO();
+        Response<Boolean> responseError = new Response<>();
+        final Dish dish = dishDTO.convert();
+
+        DataEnvironment.run((Void) -> {
+            responseError.setContent(dishDAO.add(dish));
+
+        });
+
+        return responseError;
+    }
+
+    private Response<Boolean> updateDish(DishDTO dishDTO){
+        DishDAO dishDAO = DataEnvironment.getDishDAO();
+        Response<Boolean> responseError = new Response<>();
+        final Dish dishConverted = dishDTO.convert();
+
+        DataEnvironment.run((Void) -> {
+            final Dish dish = dishDAO.getByName(dishConverted.getName());
+            responseError.setContent(dishDAO.update(dishConverted, dish.getId()));
+
+        });
+
+        return responseError;
+    }
+
+    @GetMapping("/dishes")
+    public String getList(Model model) {
+        Response<List<Dish>> response = getDishes();
         model.addAttribute("dishes", response.getContent());
         model.addAttribute("dishDTO", new DishDTO());
         model.addAttribute("showError", false);
@@ -51,23 +83,9 @@ public class WebController {
     }
 
     @PostMapping("/dishes")
-    public String addDish(Model model, @ModelAttribute DishDTO dishDTO){
-        DishDAO dishDAO = DataEnvironment.getDishDAO();
-        Response<List<Dish>> responseDishes = new Response<>();
-        Response<Boolean> responseError = new Response<>();
-        final Dish dish = dishDTO.convert();
-
-        DataEnvironment.run((Void) -> {
-            responseError.setContent(dishDAO.add(dish));
-            List<Dish> dishes = dishDAO.getAll();
-
-            for(Dish d : dishes) {
-                d.calcAverageEstimation();
-            }
-
-            responseDishes.setContent(dishes);
-        });
-
+    public String postList(Model model, @ModelAttribute DishDTO dishDTO){
+        Response<List<Dish>> responseDishes = getDishes();
+        Response<Boolean> responseError = updateDish(dishDTO);
         model.addAttribute("dishes", responseDishes.getContent());
         model.addAttribute("dishDTO", new DishDTO());
         model.addAttribute("showError", !responseError.getContent());

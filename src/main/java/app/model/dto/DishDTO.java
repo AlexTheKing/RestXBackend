@@ -13,6 +13,7 @@ public class DishDTO {
     private String mDescription;
     private String mIngredients;
     private String mBitmapUrl;
+    private String mIsUpdate;
 
     public DishDTO() { }
 
@@ -96,6 +97,14 @@ public class DishDTO {
 
     public void setBitmapUrl(String bitmapUrl) {
         this.mBitmapUrl = bitmapUrl;
+    }
+
+    public String getIsUpdate() {
+        return mIsUpdate;
+    }
+
+    public void setIsUpdate(String isUpdate) {
+        mIsUpdate = isUpdate;
     }
 
     public Dish convert(){
