@@ -85,6 +85,10 @@ table, .content, .button, .menu, form, .error {
     box-shadow: 8px 8px 12px #666;
 }
 
+.button a {
+    color: white;
+}
+
 a, a:link, a:visited, a:hover, a:active {
     text-decoration: none;
 }

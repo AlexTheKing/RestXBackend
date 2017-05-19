@@ -62,12 +62,9 @@ public class WebController {
         DishDAO dishDAO = DataEnvironment.getDishDAO();
         Response<Boolean> responseError = new Response<>();
         final Dish dishConverted = dishDTO.convert();
-
-        DataEnvironment.run((Void) -> {
-            final Dish dish = dishDAO.getByName(dishConverted.getName());
-            responseError.setContent(dishDAO.update(dishConverted, dish.getId()));
-
-        });
+        final Response<Dish> response = new Response<>();
+        DataEnvironment.run((Void) -> response.setContent(dishDAO.getByName(dishConverted.getName())));
+        DataEnvironment.run((Void) -> responseError.setContent(dishDAO.update(dishConverted, response.getContent().getId())));
 
         return responseError;
     }
@@ -84,8 +81,16 @@ public class WebController {
 
     @PostMapping("/dishes")
     public String postList(Model model, @ModelAttribute DishDTO dishDTO){
+        final boolean isUpdate = Boolean.parseBoolean(dishDTO.getIsUpdate());
+        Response<Boolean> responseError;
+
+        if(isUpdate) {
+            responseError = updateDish(dishDTO);
+        } else {
+            responseError = addDish(dishDTO);
+        }
+
         Response<List<Dish>> responseDishes = getDishes();
-        Response<Boolean> responseError = updateDish(dishDTO);
         model.addAttribute("dishes", responseDishes.getContent());
         model.addAttribute("dishDTO", new DishDTO());
         model.addAttribute("showError", !responseError.getContent());

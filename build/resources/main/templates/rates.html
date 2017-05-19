@@ -20,9 +20,9 @@
         <th>RATE</th>
     </tr>
     <tr class="activatedrow" th:each="rate : ${rates}">
-        <td th:text="${dish.getAppInstanceId()}">App id</td>
-        <td th:text="${dish.getDish().getName()}">Dish</td>
-        <td style="text-align: center" th:text="${dish.getRate()}">Rate</td>
+        <td th:text="${rate.getAppInstanceId()}">App id</td>
+        <td th:text="${rate.getDish().getName()}">Dish</td>
+        <td style="text-align: center" th:text="${rate.getRate()}">Rate</td>
     </tr>
 </table>
 </body>

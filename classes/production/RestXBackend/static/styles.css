@@ -85,6 +85,10 @@ table, .content, .button, .menu, form, .error {
     box-shadow: 8px 8px 12px #666;
 }
 
+.button a {
+    color: white;
+}
+
 a, a:link, a:visited, a:hover, a:active {
     text-decoration: none;
 }
@@ -150,10 +154,6 @@ td {
 
 .formElem:focus {
     box-shadow: 4px 4px 8px #ccc;
-}
-
-form {
-    display: none;
 }
 
 form button {

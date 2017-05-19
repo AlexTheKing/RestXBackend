@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.xml.crypto.Data;
 import java.util.Calendar;
 
 @RestController
@@ -53,7 +54,6 @@ public class ApiController {
             final DishDTO dishDTO = new DishDTO(name, weight, type, cost, currency, description, ingredients, bitmapUrl);
             final Dish dish = dishDTO.convert();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> {
                 if (dishDAO.add(dish)) {
                     System.out.println(String.format(ACTIONS.ADD_DISH, sCalendar.getTime().toString(), dish.toString()));
@@ -88,7 +88,6 @@ public class ApiController {
             final DishDTO dishDTO = new DishDTO(name, weight, type, cost, currency, description, ingredients, bitmapUrl);
             final Dish dish = dishDTO.convert();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> {
                 if (dishDAO.update(dish, id)) {
                     System.out.println(String.format(ACTIONS.UPDATE_DISH, sCalendar.getTime().toString(), dish.toString()));
@@ -113,7 +112,6 @@ public class ApiController {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> {
                 final Dish dish = dishDAO.getByName(name);
 
@@ -140,10 +138,7 @@ public class ApiController {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final Response<String> response = new Response<>();
-
-            DataEnvironment.run((Void) -> {
-                response.setContent(JsonWrapper.INSTANCE.wrapTypes(dishDAO.getTypes()));
-            });
+            DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapTypes(dishDAO.getTypes())));
 
             return response.getContent();
         } catch (Exception e) {
@@ -159,10 +154,7 @@ public class ApiController {
         try {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final Response<String> response = new Response<>();
-
-            DataEnvironment.run((Void) -> {
-                response.setContent(JsonWrapper.INSTANCE.wrapDishes(dishDAO.getAll()));
-            });
+            DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapDishes(dishDAO.getAll())));
 
             return response.getContent();
         } catch (Exception e) {
@@ -181,12 +173,11 @@ public class ApiController {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> {
                 final Dish dish = dishDAO.getByName(dishName);
                 final Comment commentObj = new Comment(appId, comment, dish);
 
-                if (commentDAO.add(commentObj)) {
+                if (dish != null && commentDAO.add(commentObj)) {
                     response.setContent(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
                     response.setContent(Constants.JSON_RESPONSES.ERROR);
@@ -207,7 +198,6 @@ public class ApiController {
         try {
             final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> {
                 final Comment comment = commentDAO.getById(id);
 
@@ -232,7 +222,6 @@ public class ApiController {
         try {
             final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapComments(commentDAO.getAll())));
 
             return response.getContent();
@@ -252,12 +241,11 @@ public class ApiController {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> {
                 final Dish dish = dishDAO.getByName(dishName);
                 final Rate rateObj = new Rate(appId, rate, dish);
 
-                if (rateDAO.add(rateObj)) {
+                if (dish != null && rateDAO.add(rateObj)) {
                     response.setContent(Constants.JSON_RESPONSES.SUCCESS);
                 } else {
                     response.setContent(Constants.JSON_RESPONSES.ERROR);
@@ -278,7 +266,6 @@ public class ApiController {
         try {
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> {
                 final Rate rate = rateDAO.getById(id);
 
@@ -303,7 +290,6 @@ public class ApiController {
         try {
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapRates(rateDAO.getAll())));
 
             return response.getContent();
@@ -321,7 +307,6 @@ public class ApiController {
             final DishDAO dishDAO = DataEnvironment.getDishDAO();
             final RateDAO rateDAO = DataEnvironment.getRateDAO();
             final Response<String> response = new Response<>();
-
             DataEnvironment.run((Void) -> {
                 RecommendationHandler handler = new RecommendationHandler(dishDAO, rateDAO);
                 response.setContent(JsonWrapper.INSTANCE.wrapDishes(handler.getRecommendations(appId)));

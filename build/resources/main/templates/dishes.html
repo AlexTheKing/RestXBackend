@@ -13,7 +13,7 @@
         <li><a class="font24" th:href="@{/rates}">Rates</a></li>
         <li><a class="font24" th:href="@{/comments}">Comments</a></li>
     </ul>
-    <div th:class="${showError}? 'font24 error' : 'hide'">
+    <div id="errorresponse" th:class="${showError}? 'font24 error' : 'hide'">
         <p>A error encountered during adding a dish. Please check entered info:</p>
         <ul>
             <li>Weight must be a positive value</li>
@@ -21,22 +21,23 @@
             <li>Ingredients must be splitted with comma ',' only as: milk,flavor</li>
         </ul>
     </div>
-    <button id="togglebutton" class="pink font12 button" onclick="toggle('#dishadd', '#togglebutton', ['Show panel', 'Hide panel'])">Show panel</button>
-    <form id="dishadd" class="font18" style="display: none;" action="#" th:action="@{/dishes}" th:object="${dishDTO}" method="post">
+    <button id="togglebutton" class="pink font12 button" onclick="toggle()"></button>
+    <form id="changedish" name="dishform" class="font18" style="display: none;" action="#" th:action="@{/dishes}" th:object="${dishDTO}" method="post">
+        <input type="hidden" id="isupdate" th:field="*{isUpdate}" value="false" />
         <div class="row">
-            <p class="inline">Name: <input class="formElem" type="text" th:field="*{name}" /></p>
-            <p class="inline">Weight: <input maxlength="4" class="formElem" type="text" th:field="*{weight}" /></p>
-            <p class="inline">Type: <input class="formElem" type="text" th:field="*{type}" /></p>
-            <p class="inline">Cost: <input maxlength="6" class="formElem" type="text" th:field="*{cost}" /></p>
+            <p class="inline">Name: <input id="name" class="formElem" type="text" th:field="*{name}" /></p>
+            <p class="inline">Weight: <input id="weight" maxlength="4" class="formElem" type="text" th:field="*{weight}" /></p>
+            <p class="inline">Type: <input id="type" class="formElem" type="text" th:field="*{type}" /></p>
+            <p class="inline">Cost: <input id="cost" maxlength="6" class="formElem" type="text" th:field="*{cost}" /></p>
         </div>
         <div class="row">
-            <p class="inline">Currency: <input maxlength="3" class="formElem" type="text" th:field="*{currency}" /></p>
-            <p class="inline">Ingredients: <input class="formElem" type="text" th:field="*{ingredients}" /></p>
-            <p class="inline">Bitmap url: <input class="formElem" type="text" th:field="*{bitmapUrl}" /></p>
+            <p class="inline">Currency: <input id="currency" maxlength="3" class="formElem" type="text" th:field="*{currency}" /></p>
+            <p class="inline">Ingredients: <input id="ingredients" class="formElem" type="text" th:field="*{ingredients}" /></p>
+            <p class="inline">Bitmap url: <input id="bitmapUrl" class="formElem" type="text" th:field="*{bitmapUrl}" /></p>
         </div>
         <div class="row">
-            <p class="inline">Description: <textarea class="formElem" th:field="*{description}"></textarea></p>
-            <p class="inline"><button class="pink font18 button" type="submit">Submit</button><button class="pink font18 button" type="reset">Reset</button></p>
+            <p class="inline">Description: <textarea id="description" class="formElem" th:field="*{description}"></textarea></p>
+            <p class="inline"><button type="button" class="pink font18 button" onclick="performRequest()">Submit</button><button class="pink font18 button" type="button" onclick="formReset()">Reset</button></p>
         </div>
     </form>
     <table>
@@ -50,19 +51,21 @@
             <th>AVERAGE RATE</th>
             <th>INGREDIENTS</th>
             <th>BITMAP URL</th>
-            <th></th>
+            <th>UPDATE</th>
+            <th>DELETE</th>
         </tr>
         <tr class="activatedrow" th:each="dish,index : ${dishes}" th:id="${'line' + index.index}">
-            <td th:text="${dish.getName()}">Name</td>
-            <td style="text-align: center" th:text="${dish.getWeight()}">Weight</td>
-            <td th:text="${dish.getType()}">Type</td>
-            <td style="text-align: center" th:text="${dish.getCost()}">Cost</td>
-            <td style="text-align: center" th:text="${dish.getCurrency()}">Currency</td>
-            <td th:text="${dish.getDescription()}">Description</td>
+            <td th:id="${'name' + index.index}" th:text="${dish.getName()}">Name</td>
+            <td th:id="${'weight' + index.index}" style="text-align: center" th:text="${dish.getWeight()}">Weight</td>
+            <td th:id="${'type' + index.index}" th:text="${dish.getType()}">Type</td>
+            <td th:id="${'cost' + index.index}" style="text-align: center" th:text="${dish.getCost()}">Cost</td>
+            <td th:id="${'currency' + index.index}" style="text-align: center" th:text="${dish.getCurrency()}">Currency</td>
+            <td th:id="${'description' + index.index}" th:text="${dish.getDescription()}">Description</td>
             <td style="text-align: center" th:text="${dish.getPrettyAverageEstimation()}">Average rate</td>
-            <td th:text="${dish.getIngredientsAsString()}">Ingredients</td>
-            <td><a th:href="@{${dish.getBitmapUrl()}}" th:text="${dish.getBitmapUrl()}">Bitmap url</a></td>
-            <td><button class="pink button" th:onclick="${'deleteDish(' + index.index + ', ''' + dish.getName() + ''')'}">Delete</button></td>
+            <td th:id="${'ingredients' + index.index}" th:text="${dish.getIngredientsAsString()}">Ingredients</td>
+            <td><a th:id="${'bitmapUrl' + index.index}" th:href="@{${dish.getBitmapUrl()}}" th:text="${dish.getBitmapUrl()}">Bitmap url</a></td>
+            <td><button class="pink button" th:onclick="${'updateDishPreload(' + index.index + ')'}"><a href="#changedish">Update</a></button></td>
+            <td><button class="pink button" th:onclick="${'deleteDishAjax(' + index.index + ', ''' + dish.getName() + ''')'}">Delete</button></td>
         </tr>
     </table>
     <script src="jquery.min.js"></script>
