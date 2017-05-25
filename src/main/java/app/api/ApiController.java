@@ -12,6 +12,7 @@ import app.model.dao.RateDAO;
 import app.util.Constants;
 import app.model.DataEnvironment;
 import app.util.Response;
+import app.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -184,7 +185,7 @@ public class ApiController {
                 }
             });
 
-            return response.getContent();
+            return listComments(dishName);
         } catch (Exception e) {
             System.err.println(String.format(ACTIONS.ADD_COMMENT, sCalendar.getTime().toString(), e));
             e.printStackTrace();
@@ -218,11 +219,17 @@ public class ApiController {
     }
 
     @RequestMapping("/app/api/list/comments")
-    public String listComments() {
+    public String listComments(@RequestParam(name = "dishname", defaultValue = StringUtils.EMPTY) String dishName) {
         try {
             final CommentDAO commentDAO = DataEnvironment.getCommentDAO();
             final Response<String> response = new Response<>();
-            DataEnvironment.run((Void) -> response.setContent(JsonWrapper.INSTANCE.wrapComments(commentDAO.getAll())));
+            DataEnvironment.run((Void) -> {
+                if(dishName.equals(StringUtils.EMPTY)) {
+                    response.setContent(JsonWrapper.INSTANCE.wrapComments(commentDAO.getAll()));
+                } else {
+                    response.setContent(JsonWrapper.INSTANCE.wrapComments(commentDAO.getByName(dishName)));
+                }
+            });
 
             return response.getContent();
         } catch (Exception e) {
@@ -246,7 +253,9 @@ public class ApiController {
                 final Rate rateObj = new Rate(appId, rate, dish);
 
                 if (dish != null && rateDAO.add(rateObj)) {
-                    response.setContent(Constants.JSON_RESPONSES.SUCCESS);
+                    rateDAO.add(rateObj);
+                    dish.calcAverageEstimation();
+                    response.setContent(String.format("%.2f", dish.getAverageEstimation()));
                 } else {
                     response.setContent(Constants.JSON_RESPONSES.ERROR);
                 }
@@ -309,7 +318,7 @@ public class ApiController {
             final Response<String> response = new Response<>();
             DataEnvironment.run((Void) -> {
                 RecommendationHandler handler = new RecommendationHandler(dishDAO, rateDAO);
-                response.setContent(JsonWrapper.INSTANCE.wrapDishes(handler.getRecommendations(appId)));
+                response.setContent(JsonWrapper.INSTANCE.wrapDishes(handler.getRecommendations(appId), true));
             });
 
             return response.getContent();

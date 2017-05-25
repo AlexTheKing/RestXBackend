@@ -5,6 +5,7 @@ import app.model.entities.comment.Comment;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class CommentDAO extends AbstractDAO {
@@ -40,5 +41,19 @@ public class CommentDAO extends AbstractDAO {
         });
 
         return comment[0];
+    }
+
+    @SuppressWarnings("unchecked")
+    public List<Comment> getByName(String name) {
+        final List[] comments = new List[1];
+        final Session session = getSession();
+
+        DatabaseHandler.run(session, (Void) -> {
+            Query query = session.createQuery("from Comment comment where comment.mDish.mName= :name");
+            query.setParameter("name", name);
+            comments[0] = (List<Comment>) query.list();
+        });
+
+        return comments[0];
     }
 }

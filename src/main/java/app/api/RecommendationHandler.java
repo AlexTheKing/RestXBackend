@@ -149,6 +149,10 @@ class RecommendationHandler {
     }
 
     private double calculatePearsonCorrelation(List<Rate> userRates, List<Rate> otherUserRates){
+        if(userRates == null || otherUserRates == null || userRates.size() == 0) {
+            return 0;
+        }
+
         int userSum = 0;
         int otherSum = 0;
         int userSumSquare = 0;

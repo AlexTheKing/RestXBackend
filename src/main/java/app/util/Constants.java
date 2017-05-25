@@ -16,6 +16,7 @@ public class Constants {
         String RESPONSE = "response";
         String TYPES = "types";
         String COMMENTS = "comments";
+        String RECOMMENDATIONS = "recommendations";
     }
 
     public interface RECOMMENDATIONS {

@@ -11,14 +11,16 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.List;
+import java.util.Locale;
 
 public enum JsonWrapper {
 
     INSTANCE;
 
+    private static final ObjectMapper mMapper = new ObjectMapper();
+
     public String wrapTypes(List<String> types) {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode rootObj = mapper.createObjectNode();
+        ObjectNode rootObj = mMapper.createObjectNode();
         ObjectNode responseObj = rootObj.putObject(Constants.JSON_WRAPPER_PARTS.RESPONSE);
         ArrayNode typesArray = responseObj.putArray(Constants.JSON_WRAPPER_PARTS.TYPES);
 
@@ -30,40 +32,38 @@ public enum JsonWrapper {
     }
 
     public String wrapDishes(List<Dish> dishes) {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode rootObj = mapper.createObjectNode();
+        return wrapDishes(dishes, false);
+    }
+
+    public String wrapDishes(List<Dish> dishes, boolean isRecommendations) {
+        ObjectNode rootObj = mMapper.createObjectNode();
         ObjectNode responseObj = rootObj.putObject(Constants.JSON_WRAPPER_PARTS.RESPONSE);
+        ArrayNode arrayNode = null;
+
+        if(isRecommendations) {
+            arrayNode = responseObj.putArray(Constants.JSON_WRAPPER_PARTS.RECOMMENDATIONS);
+        }
 
         for (Dish dish : dishes) {
             String type = dish.getType();
 
-            if (!responseObj.has(type)) {
-                responseObj.putArray(type);
+            if(!isRecommendations) {
+                if (!responseObj.has(type)) {
+                    responseObj.putArray(type);
+                }
+
+                arrayNode = ((ArrayNode) responseObj.get(type));
             }
 
-            ArrayNode arrayNode = ((ArrayNode) responseObj.get(type));
             ObjectNode dishObj = arrayNode.addObject();
-            dishObj.put(DishMapping.NAME, dish.getName());
-            Cost cost = dish.getCost();
-            dishObj.put(DishMapping.COST, String.format(DishMapping.COST_BUILDER, cost.getFirstOrder(), cost.getSecondOrder()));
-            dishObj.put(DishMapping.CURRENCY, dish.getCurrency());
-            dishObj.put(DishMapping.WEIGHT, dish.getWeight());
-            dishObj.put(DishMapping.DESCRIPTION, dish.getDescription());
-            dishObj.put(DishMapping.AVERAGE_ESTIMATION, dish.calcAverageEstimation());
-            dishObj.put(DishMapping.BITMAP_URL, dish.getBitmapUrl());
-            ArrayNode ingredientsArray = dishObj.putArray(DishMapping.INGREDIENTS);
-
-            for (String ingredient : dish.getIngredients()) {
-                ingredientsArray.add(ingredient);
-            }
+            addDishMapping(dishObj, dish);
         }
 
         return rootObj.toString();
     }
 
     public String wrapComments(List<Comment> comments) {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode rootObj = mapper.createObjectNode();
+        ObjectNode rootObj = mMapper.createObjectNode();
         ObjectNode responseObj = rootObj.putObject(Constants.JSON_WRAPPER_PARTS.RESPONSE);
         ArrayNode commentsArray = responseObj.putArray(Constants.JSON_WRAPPER_PARTS.COMMENTS);
 
@@ -75,8 +75,7 @@ public enum JsonWrapper {
     }
 
     public String wrapRates(List<Rate> ratings) {
-        ObjectMapper mapper = new ObjectMapper();
-        ObjectNode rootObj = mapper.createObjectNode();
+        ObjectNode rootObj = mMapper.createObjectNode();
         ObjectNode responseObj = rootObj.putObject(Constants.JSON_WRAPPER_PARTS.RESPONSE);
         ArrayNode ratesArray = responseObj.putArray(Constants.JSON_WRAPPER_PARTS.COMMENTS);
 
@@ -85,5 +84,22 @@ public enum JsonWrapper {
         }
 
         return rootObj.toString();
+    }
+
+    private void addDishMapping(ObjectNode dishObj, Dish dish) {
+        dishObj.put(DishMapping.NAME, dish.getName());
+        Cost cost = dish.getCost();
+        dishObj.put(DishMapping.TYPE, dish.getType());
+        dishObj.put(DishMapping.COST, String.format(DishMapping.COST_BUILDER, cost.getFirstOrder(), cost.getSecondOrder()));
+        dishObj.put(DishMapping.CURRENCY, dish.getCurrency());
+        dishObj.put(DishMapping.WEIGHT, dish.getWeight());
+        dishObj.put(DishMapping.DESCRIPTION, dish.getDescription());
+        dishObj.put(DishMapping.AVERAGE_ESTIMATION, String.format(Locale.US, "%.2f", dish.calcAverageEstimation()));
+        dishObj.put(DishMapping.BITMAP_URL, dish.getBitmapUrl());
+        ArrayNode ingredientsArray = dishObj.putArray(DishMapping.INGREDIENTS);
+
+        for (String ingredient : dish.getIngredients()) {
+            ingredientsArray.add(ingredient);
+        }
     }
 }
